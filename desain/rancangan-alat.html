@@ -1,0 +1,604 @@
+<title>Rancangan Alat Bernoulli</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1b222c; --paper: #f4f2ec; --stage: #e8e5de; --line: #d5cec0;
+    --muted: #6e6859; --accent: #1f74b8; --warn: #b0521f; --good: #2b7d5c; --violet: #6b4fa3;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e9e6dc; --paper: #13161a; --stage: #23272d;
+      --line: #343941; --muted: #9a9486; --accent: #62a9dd; --warn: #e0925c; --good: #5cc79b; --violet: #a88fdc;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e9e6dc; --paper: #13161a; --stage: #23272d;
+    --line: #343941; --muted: #9a9486; --accent: #62a9dd; --warn: #e0925c; --good: #5cc79b; --violet: #a88fdc;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink); font-family: var(--font-body);
+    padding-inline: 16px;
+    padding-block: max(26px, env(safe-area-inset-top, 0px)) max(36px, env(safe-area-inset-bottom, 0px));
+  }
+  .wrap { max-width: 1120px; margin-inline: auto; }
+
+  header {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    justify-content: space-between; align-items: flex-end;
+    border-bottom: 2px solid var(--ink); padding-bottom: 16px; margin-bottom: 22px;
+  }
+  .eyebrow { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px 0; }
+  h1 { font-size: clamp(1.45rem, 1.1rem + 1.5vw, 2rem); margin: 0; line-height: 1.12; text-wrap: balance; letter-spacing: -.01em; }
+  .titleblock { font-family: var(--font-mono); font-size: .72rem; border: 1.5px solid var(--ink); padding: 9px 13px; line-height: 1.75; min-width: 208px; }
+  .titleblock .row { display: flex; justify-content: space-between; gap: 18px; }
+  .titleblock .row + .row { border-top: 1px dashed var(--line); margin-top: 3px; padding-top: 3px; }
+  .titleblock .k { color: var(--muted); }
+
+  .change { border: 1px solid var(--line); border-left: 3px solid var(--ink); background: var(--stage); padding: 12px 16px; margin-bottom: 18px; font-size: .88rem; line-height: 1.6; }
+  .change strong { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; display: block; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+  .change ul { margin: 0; padding-left: 18px; }
+
+  .zonebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  .zone { border: 1px solid var(--line); background: var(--stage); padding: 11px 14px; border-top: 3px solid var(--accent); }
+  .zone.b { border-top-color: var(--warn); }
+  .zone.c { border-top-color: var(--good); }
+  .zone.d { border-top-color: var(--violet); border-style: dashed; border-top-style: solid; }
+  .zone .lab { font-family: var(--font-mono); font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+  .zone .eq { font-family: var(--font-mono); font-size: .82rem; margin-top: 5px; }
+  .zone .sub { font-size: .76rem; color: var(--muted); margin-top: 4px; }
+  @media (max-width: 860px) { .zonebar { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .zonebar { grid-template-columns: 1fr; } }
+
+  .stage-frame { background: var(--stage); border: 1.5px solid var(--line); padding: 10px; overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; min-width: 640px; }
+  figure { margin: 0 0 14px 0; }
+  figcaption { font-size: .84rem; color: var(--muted); margin-top: 10px; max-width: 80ch; line-height: 1.55; }
+
+  /* ---- material palette: literal (white lab-kit) ---- */
+  .m-board  { fill: #f7f7f4; stroke: #a8aeb4; stroke-width: 1.6; }
+  .m-struct { fill: #e3e6e2; stroke: #a8aeb4; stroke-width: 1.4; }
+  .m-dark   { fill: #2b3138; stroke: #1a1f24; stroke-width: 1.2; }
+  .m-pvc    { fill: #1f74b8; stroke: #144f83; stroke-width: 1.4; }
+  .m-brass  { fill: #c9a227; stroke: #8f6f12; stroke-width: 1; }
+  .m-acryl  { fill: #eaf4fb; stroke: #7f9aab; stroke-width: 1.8; fill-opacity: .92; }
+  .m-tube   { fill: #fbfdfe; stroke: #8299a8; stroke-width: 1.1; }
+  .m-waterln{ stroke: #4b93c2; stroke-width: 1.2; fill: none; }
+  .m-glass  { stroke: #ffffff; stroke-width: 1.4; fill: none; opacity: .55; }
+  .m-shadow { fill: #000000; opacity: .1; }
+  .m-tick   { stroke: #c8d0d6; stroke-width: .8; }
+
+  .pipe-lg-o { stroke: #7f9aab; stroke-width: 52; fill: none; stroke-linejoin: round; }
+  .pipe-lg-i { stroke: #d9ecf7; stroke-width: 48; fill: none; stroke-linejoin: round; }
+  .pipe-md-o { stroke: #7f9aab; stroke-width: 36; fill: none; stroke-linejoin: round; }
+  .pipe-md-i { stroke: #d9ecf7; stroke-width: 32; fill: none; stroke-linejoin: round; }
+  .pipe-sm-o { stroke: #7f9aab; stroke-width: 26; fill: none; stroke-linejoin: round; }
+  .pipe-sm-i { stroke: #d9ecf7; stroke-width: 22; fill: none; stroke-linejoin: round; }
+  .pipe-pump { stroke: #144f83; stroke-width: 10; fill: none; stroke-linejoin: round; }
+
+  .m-hose   { stroke: #b9d0dd; stroke-width: 3.4; fill: none; stroke-linecap: round; }
+  .m-hose-i { stroke: #eaf5fa; stroke-width: 1.2; fill: none; stroke-linecap: round; }
+  .m-return { stroke: #9bb3c2; stroke-width: 2; fill: none; stroke-dasharray: 7 5; }
+  .m-datum  { stroke: #b0521f; stroke-width: 1.3; fill: none; stroke-dasharray: 9 5; opacity: .8; }
+  .m-dim    { stroke: #b0521f; stroke-width: 1.2; fill: none; }
+  .m-note   { stroke: #2b7d5c; stroke-width: 1.1; fill: none; stroke-dasharray: 4 3; }
+  .m-hydro  { stroke: #6b4fa3; stroke-width: 1.2; fill: none; stroke-dasharray: 4 3; }
+
+  .t-onDark { fill: #f2f4f6; font-family: 'IBM Plex Mono', monospace; }
+  .t-scale  { fill: #7b858d; font-family: 'IBM Plex Mono', monospace; font-size: 10px; }
+  .t-micro  { fill: #5d666e; font-family: 'IBM Plex Mono', monospace; font-size: 10px; }
+  .t-dim    { fill: #b0521f; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; }
+  .t-note   { fill: #2b7d5c; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; }
+  .t-hydro  { fill: #6b4fa3; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; }
+  .callout-c{ fill: #2b3138; stroke: #ffffff; stroke-width: 1.4; }
+  .callout-t{ fill: #ffffff; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
+  .callout-l{ stroke: #2b3138; stroke-width: 1.1; opacity: .5; }
+
+  .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px 26px; margin: 22px 0 30px 0; }
+  .legend-item { display: flex; gap: 10px; align-items: baseline; font-size: .87rem; }
+  .legend-num { flex: none; width: 21px; height: 21px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: var(--font-mono); font-size: .72rem; font-weight: 600; display: grid; place-items: center; }
+  .legend-item.new .legend-num { background: var(--violet); }
+  .legend-item .sub { color: var(--muted); display: block; font-size: .8rem; }
+
+  section h2 { font-family: var(--font-mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  section + section { margin-top: 28px; }
+
+  .flow-block + .flow-block { margin-top: 18px; }
+  .flow-title { font-weight: 600; font-size: .92rem; margin: 0 0 8px 0; }
+  .flow-title span { font-weight: 400; color: var(--muted); font-size: .82rem; }
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px; list-style: none; margin: 0; padding: 0; }
+  .flow li { display: flex; align-items: center; gap: 6px; }
+  .flow li + li::before { content: "→"; color: var(--muted); font-family: var(--font-mono); }
+  .chip { border: 1px solid var(--line); background: var(--stage); padding: 7px 10px; font-size: .82rem; line-height: 1.35; }
+  .chip small { display: block; color: var(--muted); font-size: .72rem; }
+  .chip.a { border-left: 3px solid var(--accent); }
+  .chip.b { border-left: 3px solid var(--warn); }
+  .chip.c { border-left: 3px solid var(--good); }
+  .chip.d { border-left: 3px solid var(--violet); }
+
+  .ctrl { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  .ctrl th { text-align: left; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 0 12px 7px 0; font-weight: 500; }
+  .ctrl td { padding: 8px 12px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .ctrl td:first-child { font-weight: 600; white-space: nowrap; }
+  .table-scroll { overflow-x: auto; }
+
+  .steps { counter-reset: s; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .steps li { counter-increment: s; border: 1px solid var(--line); background: var(--stage); padding: 11px 13px; font-size: .84rem; line-height: 1.5; }
+  .steps li::before { content: "Langkah " counter(s); display: block; font-family: var(--font-mono); font-size: .67rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .steps li b { display: block; margin-bottom: 2px; }
+  .steps li.d { border-top: 3px solid var(--violet); }
+  .steps li.a { border-top: 3px solid var(--accent); }
+  .steps li.c { border-top: 3px solid var(--good); }
+  .steps li.b { border-top: 3px solid var(--warn); }
+
+  .pairs { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  .pairs th { text-align: left; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 0 12px 7px 0; font-weight: 500; }
+  .pairs td { padding: 8px 12px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .pairs td:first-child { font-family: var(--font-mono); white-space: nowrap; color: var(--accent); font-weight: 600; }
+  .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .note h3 { margin: 0 0 5px 0; font-size: .95rem; }
+  .note p { margin: 0; font-size: .85rem; color: var(--muted); line-height: 1.55; }
+  .note.warn h3 { color: var(--warn); }
+  .note.good h3 { color: var(--good); }
+
+  footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .79rem; color: var(--muted); line-height: 1.6; }
+  footer code { font-family: var(--font-mono); background: var(--stage); padding: 1px 5px; }
+  @media (max-width: 520px) { .titleblock { width: 100%; } }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div>
+      <p class="eyebrow">Sketsa rancangan · tampak depan · rev. 07</p>
+      <h1>Alat Praktikum Fluida Dinamis — Satu Tangki, Pompa Langsung</h1>
+    </div>
+    <div class="titleblock">
+      <div class="row"><span class="k">REV</span><span>07 · pompa langsung</span></div>
+      <div class="row"><span class="k">PANDANGAN</span><span>Depan</span></div>
+      <div class="row"><span class="k">SKALA</span><span>NTS</span></div>
+      <div class="row"><span class="k">STATUS</span><span>Konsep</span></div>
+    </div>
+  </header>
+
+  <div class="change">
+    <strong>Berubah dari rev. 06</strong>
+    <ul>
+      <li>Dua tangki (sumber di rak tinggi + penampung) → <b>satu tangki di lantai alat</b>. Rak dihapus.</li>
+      <li>Aliran tidak lagi didorong gravitasi, tapi <b>langsung oleh pompa</b> yang kecepatannya diatur PWM. Mode Isi/Tahan/Mati dihapus.</li>
+      <li>Katup servo sekarang berperan sebagai <b>katup hilir</b>: menaikkan/menurunkan seluruh kolom manometer.</li>
+      <li>P = ρgh jadi <b>demo terpisah</b> di tangki (sensor tekanan dasar + HC-SR04), tidak memengaruhi aliran.</li>
+      <li>Test section tiga zona dan manometer 6 tabung <b>tidak berubah</b>.</li>
+    </ul>
+  </div>
+
+  <div class="zonebar">
+    <div class="zone a">
+      <div class="lab">Zona A · venturi mendatar</div>
+      <div class="eq">P + ½ρv² = tetap</div>
+      <div class="sub">Ketinggian tetap → hanya kecepatan yang berubah</div>
+    </div>
+    <div class="zone b">
+      <div class="lab">Zona B · segmen naik</div>
+      <div class="eq">P + ρgh = tetap</div>
+      <div class="sub">Penampang tetap → hanya ketinggian yang berubah</div>
+    </div>
+    <div class="zone c">
+      <div class="lab">Zona C · menyempit di atas</div>
+      <div class="eq">P + ½ρv² = tetap</div>
+      <div class="sub">Ulangi zona A, tapi di ketinggian berbeda</div>
+    </div>
+    <div class="zone d">
+      <div class="lab">Demo terpisah · tangki</div>
+      <div class="eq">P = ρgh</div>
+      <div class="sub">Fluida diam: tekanan dasar vs tinggi air</div>
+    </div>
+  </div>
+
+  <figure>
+    <div class="stage-frame">
+      <svg viewBox="0 0 1100 720" role="img" aria-label="Tampak depan alat rev. 07: satu tangki akrilik di atas pelat dasar sebelah kiri berisi pompa celup; pompa mendorong air keluar lewat dinding kanan tangki ke pipa besar mendatar dengan sensor flow pertama, melewati venturi (zona A), naik lewat segmen miring (zona B), lalu mengecil di ketinggian atas dengan sensor flow kedua (zona C); enam titik sadap tersambung ke panel manometer enam tabung; di ujung ada kran pembuang udara dan katup hilir bermotor servo, lalu pipa balik lewat belakang kembali ke tangki yang sama. Di tangki terpasang sensor ultrasonik di tutup dan sensor tekanan di dasar untuk demo P sama dengan rho g h.">
+        <defs>
+          <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#8ec6e6"></stop>
+            <stop offset="100%" stop-color="#5aa3d0"></stop>
+          </linearGradient>
+          <linearGradient id="acrylGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f4fafd"></stop>
+            <stop offset="55%" stop-color="#d9ecf7"></stop>
+            <stop offset="100%" stop-color="#eaf4fb"></stop>
+          </linearGradient>
+          <marker id="rtnArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#9bb3c2"></path>
+          </marker>
+          <marker id="dimA" viewBox="0 0 10 10" refX="5" refY="3" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M5,0 L9,8 L1,8 z" fill="#b0521f"></path>
+          </marker>
+          <marker id="hydA" viewBox="0 0 10 10" refX="5" refY="3" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M5,0 L9,8 L1,8 z" fill="#6b4fa3"></path>
+          </marker>
+          <marker id="flowA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#1f74b8"></path>
+          </marker>
+        </defs>
+
+        <!-- return pipe (rear, low) -->
+        <path class="m-return" d="M 971 593 L 971 640 L 214 640" marker-end="url(#rtnArrow)"></path>
+
+        <!-- datum -->
+        <line class="m-datum" x1="214" y1="600" x2="1080" y2="600"></line>
+        <text class="t-dim" x="1000" y="592">0 mm — datum</text>
+
+        <!-- ===== manometer panel ===== -->
+        <rect class="m-board" x="260" y="120" width="420" height="334" rx="3"></rect>
+        <rect x="260" y="120" width="420" height="32" rx="3" fill="#2b3138"></rect>
+        <text x="470" y="141" text-anchor="middle" class="t-onDark" font-size="12.5" letter-spacing="2.4">MANOMETER — TINGGI TEKAN</text>
+
+        <line class="m-tick" x1="296" y1="190" x2="650" y2="190"></line>
+        <text class="t-scale" x="292" y="194" text-anchor="end">350</text><text class="t-scale" x="654" y="194">350</text>
+        <line class="m-tick" x1="296" y1="250" x2="650" y2="250"></line>
+        <text class="t-scale" x="292" y="254" text-anchor="end">300</text><text class="t-scale" x="654" y="254">300</text>
+        <line class="m-tick" x1="296" y1="310" x2="650" y2="310"></line>
+        <text class="t-scale" x="292" y="314" text-anchor="end">250</text><text class="t-scale" x="654" y="314">250</text>
+        <line class="m-tick" x1="296" y1="370" x2="650" y2="370"></line>
+        <text class="t-scale" x="292" y="374" text-anchor="end">200</text><text class="t-scale" x="654" y="374">200</text>
+        <line class="m-tick" x1="296" y1="430" x2="650" y2="430"></line>
+        <text class="t-scale" x="292" y="434" text-anchor="end">150</text><text class="t-scale" x="654" y="434">150</text>
+        <text class="t-micro" x="292" y="176" text-anchor="end">mm</text>
+
+        <rect class="m-tube" x="295" y="186" width="10" height="244"></rect>
+        <rect x="296.2" y="244" width="7.6" height="185" fill="url(#waterGrad)"></rect>
+        <line class="m-waterln" x1="296" y1="244" x2="304" y2="244"></line>
+
+        <rect class="m-tube" x="355" y="186" width="10" height="244"></rect>
+        <rect x="356.2" y="388" width="7.6" height="41" fill="url(#waterGrad)"></rect>
+        <line class="m-waterln" x1="356" y1="388" x2="364" y2="388"></line>
+
+        <rect class="m-tube" x="415" y="186" width="10" height="244"></rect>
+        <rect x="416.2" y="262" width="7.6" height="167" fill="url(#waterGrad)"></rect>
+        <line class="m-waterln" x1="416" y1="262" x2="424" y2="262"></line>
+
+        <rect class="m-tube" x="475" y="186" width="10" height="244"></rect>
+        <rect x="476.2" y="266" width="7.6" height="163" fill="url(#waterGrad)"></rect>
+        <line class="m-waterln" x1="476" y1="266" x2="484" y2="266"></line>
+
+        <rect class="m-tube" x="535" y="186" width="10" height="244"></rect>
+        <rect x="536.2" y="269" width="7.6" height="160" fill="url(#waterGrad)"></rect>
+        <line class="m-waterln" x1="536" y1="269" x2="544" y2="269"></line>
+
+        <rect class="m-tube" x="595" y="186" width="10" height="244"></rect>
+        <rect x="596.2" y="328" width="7.6" height="101" fill="url(#waterGrad)"></rect>
+        <line class="m-waterln" x1="596" y1="328" x2="604" y2="328"></line>
+
+        <polyline points="300,244 360,388 420,262 480,266 540,269 600,328"
+                  fill="none" stroke="#c9532a" stroke-width="1.6" stroke-dasharray="5 4" opacity=".7"></polyline>
+
+        <path class="m-note" d="M 412 256 L 412 228 L 548 228 L 548 263"></path>
+        <line class="m-note" x1="550" y1="228" x2="686" y2="206"></line>
+        <text class="t-note" x="690" y="202">3·4·5 tetap sama</text>
+        <text class="t-note" x="690" y="216">meski pipa naik</text>
+
+        <rect x="260" y="430" width="420" height="24" fill="#2b3138"></rect>
+        <rect class="m-brass" x="297" y="454" width="6" height="9"></rect>
+        <rect class="m-brass" x="357" y="454" width="6" height="9"></rect>
+        <rect class="m-brass" x="417" y="454" width="6" height="9"></rect>
+        <rect class="m-brass" x="477" y="454" width="6" height="9"></rect>
+        <rect class="m-brass" x="537" y="454" width="6" height="9"></rect>
+        <rect class="m-brass" x="597" y="454" width="6" height="9"></rect>
+
+        <rect class="m-struct" x="276" y="454" width="9" height="196"></rect>
+        <rect class="m-struct" x="656" y="454" width="9" height="196"></rect>
+
+        <!-- ===== tap hoses (behind pipes) ===== -->
+        <g>
+          <path class="m-hose" d="M 230 562 C 230 522 300 506 300 463"></path>
+          <path class="m-hose" d="M 377 576 C 377 534 360 506 360 463"></path>
+          <path class="m-hose" d="M 530 562 C 530 522 420 508 420 463"></path>
+          <path class="m-hose" d="M 610 514 C 610 486 480 500 480 463"></path>
+          <path class="m-hose" d="M 685 468 C 685 452 540 496 540 463"></path>
+          <path class="m-hose" d="M 790 476 C 790 458 600 496 600 463"></path>
+          <path class="m-hose-i" d="M 230 562 C 230 522 300 506 300 463"></path>
+          <path class="m-hose-i" d="M 377 576 C 377 534 360 506 360 463"></path>
+          <path class="m-hose-i" d="M 530 562 C 530 522 420 508 420 463"></path>
+          <path class="m-hose-i" d="M 610 514 C 610 486 480 500 480 463"></path>
+          <path class="m-hose-i" d="M 685 468 C 685 452 540 496 540 463"></path>
+          <path class="m-hose-i" d="M 790 476 C 790 458 600 496 600 463"></path>
+        </g>
+
+        <!-- ===== single tank on base ===== -->
+        <rect class="m-acryl" x="60" y="461" width="146" height="189" rx="2" fill="url(#acrylGrad)"></rect>
+        <rect x="64" y="500" width="138" height="146" fill="url(#waterGrad)" opacity=".9"></rect>
+        <line class="m-waterln" x1="64" y1="500" x2="202" y2="500"></line>
+        <path class="m-glass" d="M 72 474 L 72 636"></path>
+        <rect class="m-struct" x="54" y="452" width="158" height="9" rx="2"></rect>
+
+        <!-- HC-SR04 under lid -->
+        <rect class="m-dark" x="118" y="461" width="22" height="10"></rect>
+        <circle cx="124" cy="471" r="3" fill="#8b949c"></circle>
+        <circle cx="134" cy="471" r="3" fill="#8b949c"></circle>
+        <text class="t-micro" x="133" y="444" text-anchor="middle">HC-SR04</text>
+        <line x1="129" y1="474" x2="129" y2="498" stroke="#2b7d5c" stroke-width="1.3" stroke-dasharray="3 3"></line>
+
+        <!-- h dimension (hydrostatic demo) -->
+        <line class="m-hydro" x1="88" y1="502" x2="88" y2="644" marker-start="url(#hydA)" marker-end="url(#hydA)"></line>
+        <text class="t-hydro" x="80" y="560" text-anchor="end">h</text>
+
+        <!-- pump (submerged) + outlet through right wall -->
+        <path class="pipe-pump" d="M 158 624 L 184 624 L 184 600 L 206 600"></path>
+        <rect class="m-pvc" x="108" y="608" width="52" height="32" rx="4"></rect>
+        <text class="t-micro" x="134" y="628" text-anchor="middle" fill="#dbe7f0">PUMP</text>
+        <rect class="m-brass" x="202" y="588" width="10" height="24"></rect>
+        <rect class="m-brass" x="202" y="634" width="10" height="12"></rect>
+
+        <!-- pressure sensor at tank bottom + drain -->
+        <rect class="m-dark" x="42" y="624" width="18" height="16" rx="2"></rect>
+        <text class="t-micro" x="51" y="636" text-anchor="middle" fill="#cfd6dc" font-size="9">P</text>
+        <rect class="m-brass" x="46" y="592" width="14" height="8"></rect>
+        <rect class="m-struct" x="40" y="584" width="4" height="16"></rect>
+
+        <!-- ===== test section: zone A (venturi) → zone B (riser) → zone C (reducer) ===== -->
+        <path class="pipe-lg-o" d="M 212 600 L 302 600"></path>
+        <path class="pipe-lg-i" d="M 212 600 L 302 600"></path>
+        <polygon class="m-acryl" points="302,576 356,589 356,611 302,624" fill="#d9ecf7"></polygon>
+        <path class="pipe-sm-o" d="M 354 600 L 402 600"></path>
+        <path class="pipe-sm-i" d="M 354 600 L 402 600"></path>
+        <polygon class="m-acryl" points="400,589 482,576 482,624 400,611" fill="#d9ecf7"></polygon>
+        <path class="pipe-lg-o" d="M 480 600 L 570 600 L 650 505 L 714 505"></path>
+        <path class="pipe-lg-i" d="M 480 600 L 570 600 L 650 505 L 714 505"></path>
+        <polygon class="m-acryl" points="714,481 760,489 760,521 714,529" fill="#d9ecf7"></polygon>
+        <path class="pipe-md-o" d="M 758 505 L 884 505"></path>
+        <path class="pipe-md-i" d="M 758 505 L 884 505"></path>
+
+        <path class="m-glass" d="M 216 585 L 298 585"></path>
+        <path class="m-glass" d="M 360 592 L 398 592"></path>
+        <path class="m-glass" d="M 490 585 L 568 585 L 646 493 L 710 493"></path>
+        <path class="m-glass" d="M 766 495 L 876 495"></path>
+
+        <!-- flow direction arrows -->
+        <line x1="494" y1="600" x2="530" y2="600" stroke="#1f74b8" stroke-width="2" marker-end="url(#flowA)"></line>
+        <line x1="600" y1="566" x2="622" y2="540" stroke="#1f74b8" stroke-width="2" marker-end="url(#flowA)"></line>
+
+        <text class="t-micro" x="392" y="648" text-anchor="middle">zona A · venturi (h tetap)</text>
+        <text class="t-micro" x="614" y="592" text-anchor="middle">zona B</text>
+        <text class="t-micro" x="820" y="462" text-anchor="middle">zona C · menyempit (h tinggi)</text>
+
+        <!-- flow sensors -->
+        <rect class="m-dark" x="250" y="566" width="58" height="68" rx="4"></rect>
+        <rect x="258" y="576" width="42" height="5" rx="2.5" fill="#4a525b"></rect>
+        <text class="t-micro" x="279" y="608" text-anchor="middle" fill="#cfd6dc">S1</text>
+
+        <rect class="m-dark" x="815" y="479" width="54" height="56" rx="4"></rect>
+        <rect x="822" y="487" width="40" height="5" rx="2.5" fill="#4a525b"></rect>
+        <text class="t-micro" x="842" y="515" text-anchor="middle" fill="#cfd6dc">S2</text>
+
+        <!-- pressure taps -->
+        <rect class="m-brass" x="227" y="562" width="6" height="14"></rect>
+        <rect class="m-brass" x="374" y="576" width="6" height="13"></rect>
+        <rect class="m-brass" x="527" y="562" width="6" height="14"></rect>
+        <rect class="m-brass" x="607" y="514" width="6" height="14"></rect>
+        <rect class="m-brass" x="682" y="468" width="6" height="13"></rect>
+        <rect class="m-brass" x="787" y="476" width="6" height="13"></rect>
+
+        <!-- air bleed at high point -->
+        <rect class="m-brass" x="884" y="477" width="6" height="12"></rect>
+        <rect class="m-pvc" x="876" y="461" width="22" height="16" rx="3"></rect>
+
+        <!-- brackets -->
+        <rect class="m-dark" x="744" y="531" width="20" height="119" rx="2"></rect>
+
+        <!-- Δh dimension -->
+        <line class="m-dim" x1="1052" y1="505" x2="1052" y2="600" marker-start="url(#dimA)" marker-end="url(#dimA)"></line>
+        <text class="t-dim" x="1058" y="548">Δh</text>
+        <text class="t-dim" x="1058" y="562">≈12cm</text>
+
+        <!-- downstream valve + servo -->
+        <rect class="m-pvc" x="904" y="483" width="48" height="44" rx="5"></rect>
+        <rect class="m-struct" x="923" y="461" width="10" height="22"></rect>
+        <rect class="m-dark" x="897" y="423" width="62" height="38" rx="3"></rect>
+        <text class="t-micro" x="928" y="446" text-anchor="middle" fill="#cfd6dc">SERVO</text>
+        <circle cx="928" cy="461" r="7" fill="#e3e6e2" stroke="#a8aeb4" stroke-width="1.2"></circle>
+
+        <rect class="m-pvc" x="952" y="483" width="38" height="44" rx="5"></rect>
+        <rect class="m-acryl" x="963" y="527" width="16" height="66" fill="#dcecf6"></rect>
+
+        <!-- control box: screen + 2 knobs -->
+        <rect class="m-board" x="690" y="604" width="140" height="46" rx="3"></rect>
+        <rect class="m-dark" x="700" y="614" width="46" height="20" rx="2"></rect>
+        <circle cx="770" cy="624" r="8" fill="#e3e6e2" stroke="#a8aeb4" stroke-width="1.3"></circle>
+        <circle cx="770" cy="624" r="2.5" fill="#6e7780"></circle>
+        <circle cx="804" cy="624" r="8" fill="#e3e6e2" stroke="#a8aeb4" stroke-width="1.3"></circle>
+        <circle cx="804" cy="624" r="2.5" fill="#6e7780"></circle>
+        <text class="t-micro" x="770" y="645" text-anchor="middle" font-size="8">POMPA</text>
+        <text class="t-micro" x="804" y="645" text-anchor="middle" font-size="8">KATUP</text>
+
+        <!-- base plate + feet -->
+        <rect class="m-shadow" x="56" y="670" width="998" height="6" rx="3"></rect>
+        <rect class="m-board" x="36" y="650" width="1034" height="20" rx="3"></rect>
+        <line x1="36" y1="656" x2="1070" y2="656" stroke="#d2d7da" stroke-width="1"></line>
+        <text class="t-micro" x="580" y="665" text-anchor="middle">pipa balik ke tangki (jalur belakang)</text>
+        <g>
+          <rect class="m-struct" x="126" y="670" width="9" height="24"></rect>
+          <ellipse cx="130.5" cy="698" rx="20" ry="7" fill="#3b4148" stroke="#23272c" stroke-width="1"></ellipse>
+        </g>
+        <g>
+          <rect class="m-struct" x="556" y="670" width="9" height="24"></rect>
+          <ellipse cx="560.5" cy="698" rx="20" ry="7" fill="#3b4148" stroke="#23272c" stroke-width="1"></ellipse>
+        </g>
+        <g>
+          <rect class="m-struct" x="976" y="670" width="9" height="24"></rect>
+          <ellipse cx="980.5" cy="698" rx="20" ry="7" fill="#3b4148" stroke="#23272c" stroke-width="1"></ellipse>
+        </g>
+
+        <!-- ===== callouts ===== -->
+        <line class="callout-l" x1="36" y1="498" x2="62" y2="510"></line>
+        <circle class="callout-c" cx="26" cy="492" r="13"></circle>
+        <text class="callout-t" x="26" y="497" text-anchor="middle">1</text>
+
+        <line class="callout-l" x1="226" y1="549" x2="229" y2="561"></line>
+        <circle class="callout-c" cx="224" cy="536" r="13"></circle>
+        <text class="callout-t" x="224" y="541" text-anchor="middle">2</text>
+
+        <line class="callout-l" x1="330" y1="538" x2="300" y2="564"></line>
+        <circle class="callout-c" cx="340" cy="530" r="13"></circle>
+        <text class="callout-t" x="340" y="535" text-anchor="middle">3</text>
+
+        <line class="callout-l" x1="437" y1="672" x2="410" y2="618"></line>
+        <circle class="callout-c" cx="446" cy="686" r="13"></circle>
+        <text class="callout-t" x="446" y="691" text-anchor="middle">4</text>
+
+        <line class="callout-l" x1="576" y1="534" x2="598" y2="566"></line>
+        <circle class="callout-c" cx="568" cy="522" r="13"></circle>
+        <text class="callout-t" x="568" y="527" text-anchor="middle">5</text>
+
+        <line class="callout-l" x1="728" y1="574" x2="728" y2="536"></line>
+        <circle class="callout-c" cx="722" cy="578" r="13"></circle>
+        <text class="callout-t" x="722" y="583" text-anchor="middle">6</text>
+
+        <line class="callout-l" x1="842" y1="442" x2="842" y2="477"></line>
+        <circle class="callout-c" cx="842" cy="430" r="13"></circle>
+        <text class="callout-t" x="842" y="435" text-anchor="middle">7</text>
+
+        <line class="callout-l" x1="714" y1="178" x2="674" y2="192"></line>
+        <circle class="callout-c" cx="726" cy="172" r="13"></circle>
+        <text class="callout-t" x="726" y="177" text-anchor="middle">8</text>
+
+        <line class="callout-l" x1="872" y1="398" x2="884" y2="455"></line>
+        <circle class="callout-c" cx="866" cy="388" r="13"></circle>
+        <text class="callout-t" x="866" y="393" text-anchor="middle">9</text>
+
+        <line class="callout-l" x1="1014" y1="418" x2="982" y2="438"></line>
+        <circle class="callout-c" cx="1024" cy="410" r="13"></circle>
+        <text class="callout-t" x="1024" y="415" text-anchor="middle">10</text>
+
+        <line class="callout-l" x1="1004" y1="626" x2="976" y2="638"></line>
+        <circle class="callout-c" cx="1016" cy="620" r="13"></circle>
+        <text class="callout-t" x="1016" y="625" text-anchor="middle">11</text>
+
+        <line class="callout-l" x1="848" y1="608" x2="830" y2="616"></line>
+        <circle class="callout-c" cx="860" cy="602" r="13"></circle>
+        <text class="callout-t" x="860" y="607" text-anchor="middle">12</text>
+
+        <line class="callout-l" x1="36" y1="632" x2="42" y2="632"></line>
+        <circle class="callout-c" cx="24" cy="632" r="13" fill="#6b4fa3"></circle>
+        <text class="callout-t" x="24" y="637" text-anchor="middle">13</text>
+      </svg>
+    </div>
+    <figcaption><strong>Rev. 07</strong> — tangki kini hanya satu dan duduk di pelat dasar. Pompa di dalam tangki mendorong air langsung ke test section, lalu air kembali ke tangki yang sama lewat pipa belakang. Test section tiga zona dan manometer tidak berubah. Tangki punya fungsi kedua sebagai demo P = ρgh (ungu), yang berdiri sendiri dan tidak memengaruhi aliran.</figcaption>
+  </figure>
+
+  <div class="legend-grid">
+    <div class="legend-item"><span class="legend-num">1</span><span>Tangki tunggal + pompa celup DC<span class="sub">Satu-satunya wadah air. Pompa diatur PWM, tidak perlu rak</span></span></div>
+    <div class="legend-item"><span class="legend-num">2</span><span>Sadap referensi<span class="sub">Pipa besar bawah, titik acuan semua perbandingan</span></span></div>
+    <div class="legend-item"><span class="legend-num">3</span><span>Sensor flow 1<span class="sub">Debit masuk (Q), dipakai menghitung v di tiap penampang</span></span></div>
+    <div class="legend-item"><span class="legend-num">4</span><span>Venturi lengkap (zona A)<span class="sub">Menyempit lalu membesar kembali, ketinggian tetap</span></span></div>
+    <div class="legend-item"><span class="legend-num">5</span><span>Segmen naik (zona B)<span class="sub">Penampang tetap, hanya ketinggian yang berubah (Δh)</span></span></div>
+    <div class="legend-item"><span class="legend-num">6</span><span>Reducer atas (zona C)<span class="sub">Pipa mengecil di ketinggian atas</span></span></div>
+    <div class="legend-item"><span class="legend-num">7</span><span>Sensor flow 2<span class="sub">Di penampang berbeda, jadi v₂ ≠ v₁</span></span></div>
+    <div class="legend-item"><span class="legend-num">8</span><span>Panel manometer<span class="sub">Enam tinggi tekan, diukur dari satu datum bersama</span></span></div>
+    <div class="legend-item"><span class="legend-num">9</span><span>Kran pembuang udara<span class="sub">Wajib di titik tertinggi, tempat gelembung berkumpul</span></span></div>
+    <div class="legend-item"><span class="legend-num">10</span><span>Katup hilir + servo<span class="sub">Mengatur "level" tekanan: menaikkan/menurunkan semua kolom</span></span></div>
+    <div class="legend-item"><span class="legend-num">11</span><span>Pipa balik<span class="sub">Lewat belakang, masuk kembali ke tangki yang sama</span></span></div>
+    <div class="legend-item"><span class="legend-num">12</span><span>Box kontrol<span class="sub">MCU, layar, kenop pompa dan kenop katup</span></span></div>
+    <div class="legend-item new"><span class="legend-num">13</span><span>Demo P = ρgh<span class="sub">Sensor tekanan di dasar tangki + HC-SR04 di tutup + kran kuras</span></span></div>
+  </div>
+
+  <section>
+    <h2>Alur</h2>
+
+    <div class="flow-block">
+      <p class="flow-title">1 · Alur air <span>(sirkuit tertutup, satu tangki)</span></p>
+      <ol class="flow">
+        <li><span class="chip">Tangki<small>air diam</small></span></li>
+        <li><span class="chip">Pompa<small>memberi energi</small></span></li>
+        <li><span class="chip a">S1<small>ukur Q</small></span></li>
+        <li><span class="chip a">Zona A<small>venturi</small></span></li>
+        <li><span class="chip b">Zona B<small>naik Δh</small></span></li>
+        <li><span class="chip c">Zona C + S2<small>menyempit</small></span></li>
+        <li><span class="chip">Katup hilir<small>servo</small></span></li>
+        <li><span class="chip">Kembali ke tangki</span></li>
+      </ol>
+    </div>
+
+    <div class="flow-block">
+      <p class="flow-title">2 · Alur kontrol <span>(input → MCU → aktuator → hasil yang terlihat)</span></p>
+      <div class="table-scroll">
+        <table class="ctrl">
+          <thead><tr><th>Input siswa</th><th>MCU menggerakkan</th><th>Yang berubah secara fisik</th><th>Terbaca di</th></tr></thead>
+          <tbody>
+            <tr><td>Kenop pompa</td><td>PWM pompa (MOSFET)</td><td>Debit Q, jadi semua kecepatan ikut berubah. Beda kolom di venturi melebar/menyempit</td><td>Layar (Q, v₁, v₂) + manometer</td></tr>
+            <tr><td>Kenop katup</td><td>Sudut servo katup hilir</td><td>Seluruh kolom manometer naik/turun bersama. Pola antar-kolom tetap sama</td><td>Manometer</td></tr>
+            <tr><td>Tombol mode</td><td>Mode Q-konstan (opsional)</td><td>Pompa menahan debit target otomatis walau katup diputar, jadi siswa bisa mengubah satu variabel saja</td><td>Layar</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flow-block">
+      <p class="flow-title">3 · Alur praktikum siswa <span>(urutan dari yang paling sederhana)</span></p>
+      <ol class="steps">
+        <li class="d"><b>Hidrostatis P = ρgh</b>Pompa mati. Isi atau kuras tangki bertahap, catat h (HC-SR04) dan P (sensor dasar). Grafik P terhadap h berupa garis lurus.</li>
+        <li class="a"><b>Debit</b>Pompa hidup. Putar kenop pompa, amati Q di S1 berubah.</li>
+        <li class="c"><b>Kontinuitas</b>Bandingkan S1 dan S2. Debit sama, kecepatan berbeda: A₁v₁ = A₂v₂.</li>
+        <li class="b"><b>Bernoulli</b>Baca 6 kolom manometer, bandingkan pasangan titik (tabel di bawah).</li>
+        <li><b>Variasi</b>Ulangi langkah 2–4 pada 3–5 debit berbeda untuk data skripsi.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pasangan titik yang bisa dibandingkan</h2>
+    <div class="table-scroll">
+      <table class="pairs">
+        <thead>
+          <tr><th style="width:100px">Bandingkan</th><th style="width:170px">Yang berbeda</th><th>Yang dibuktikan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1 ↔ 2</td><td>Hanya kecepatan</td><td>Suku ½ρv²: tekanan jatuh di leher venturi karena aliran dipercepat.</td></tr>
+          <tr><td>2 ↔ 3</td><td>Hanya kecepatan</td><td>Pemulihan tekanan setelah pelebaran. Selisih yang tersisa dari titik 1 adalah rugi gesek.</td></tr>
+          <tr><td>3 ↔ 5</td><td>Hanya ketinggian</td><td>Suku ρgh: tinggi tekan tetap sama, artinya tekanan turun persis sebanyak kenaikan elevasi.</td></tr>
+          <tr><td>5 ↔ 6</td><td>Hanya kecepatan</td><td>Suku ½ρv² lagi, tapi kali ini di ketinggian atas. Polanya harus sama dengan 1 ↔ 2.</td></tr>
+          <tr><td>2 ↔ 6</td><td>Keduanya</td><td>Dua penyempitan pada elevasi berbeda: bentuk penurunannya sama, seluruh kurvanya yang bergeser.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Konsekuensi rev. 07</h2>
+    <div class="notes-grid">
+      <div class="note good">
+        <h3>Kontrol langsung dan mudah dijelaskan</h3>
+        <p>Kenop pompa = debit, kenop katup = level tekanan. Tidak ada lagi keterkaitan tinggi tangki ↔ katup yang membingungkan, dan katup tidak wajib selalu menutup sebagian.</p>
+      </div>
+      <div class="note good">
+        <h3>Lebih ringkas dan murah</h3>
+        <p>Rak tinggi, tangki kedua, dan logika mode Isi/Tahan/Mati hilang. Alat lebih pendek dan lebih stabil di meja.</p>
+      </div>
+      <div class="note good">
+        <h3>ρgh tetap terbukti dua kali</h3>
+        <p>Dalam fluida bergerak lewat zona B (kolom 3 ↔ 5), dan dalam fluida diam lewat demo tangki. Konsepnya tetap ada, hanya tidak lagi jadi penggerak aliran.</p>
+      </div>
+      <div class="note warn">
+        <h3>Risiko manometer meluap</h3>
+        <p>Pompa bisa memberi tekanan jauh di atas 350 mm. Butuh batas PWM di firmware, tabung lebih tinggi (±500 mm), atau manifold udara di atas tabung seperti alat komersial. Angka pastinya menunggu hitungan dimensi.</p>
+      </div>
+      <div class="note warn">
+        <h3>Pompa harus DC dan bisa di-PWM</h3>
+        <p>Pompa AC 800 L/h di rev. 06 tidak bisa diatur halus. Ganti ke pompa celup DC 12 V + driver MOSFET. Denyut pompa bisa membuat kolom bergetar, jadi perlu peredam (restriktor kecil di selang tiap tabung).</p>
+      </div>
+      <div class="note warn">
+        <h3>Demo P = ρgh butuh sensor tambahan</h3>
+        <p>Sensor tekanan analog kecil (rentang 0–10 kPa) di dasar tangki, sekitar Rp50–150 rb. Kalau budget ketat, bisa diganti satu tabung manometer ke dasar tangki, tapi hasilnya kurang "berbasis MCU".</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Gambar konsep, bukan skala sebenarnya (NTS). Tinggi kolom manometer adalah ilustrasi pola, bukan hasil hitungan. Hitungan dimensi dan tinggi tabung manometer perlu diulang untuk arsitektur pompa langsung. Acuan teknis: <code>catatan/konteks-dan-spesifikasi.md</code> (belum diperbarui ke rev. 07).
+  </footer>
+
+</div>

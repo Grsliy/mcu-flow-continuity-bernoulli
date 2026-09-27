@@ -21,12 +21,16 @@ Prinsip yang mendasari semua keputusan desain:
 ```
 ├── README.md                          ← file ini
 ├── referensi/                         ← 4 jurnal acuan (lihat di bawah)
-└── catatan/
-    ├── konteks-dan-spesifikasi.md     ← acuan kerja aktif — scope, desain, biaya, pertanyaan terbuka
-    └── draft-desain-awal.md           ← draft lama, sudah usang, disimpan sebagai arsip ide
+├── catatan/
+│   └── konteks-dan-spesifikasi.md     ← acuan kerja aktif — scope, desain, biaya, pertanyaan, log keputusan
+├── desain/
+│   ├── rancangan-alat.html            ← sketsa tampak depan + alur, Rev. 07 (buka di browser)
+│   └── perhitungan/
+│       └── 01-pipa-dan-debit.md       ← hitungan dimensi, satu file per bagian
+└── arsip/                             ← materi usang (draft awal, desain gravity-fed Rev. 06)
 ```
 
-Sketsa visual (diagram sistem, rancangan tampak depan, peta eksperimen, estimasi budget) dipublikasikan sebagai Claude Artifact terpisah selama proses diskusi — belum disalin ke repo ini. Tautannya ada di riwayat percakapan; kalau mau ikut ter-track di repo, perlu diminta untuk disalin ke folder ini.
+Yang aktif hanya `catatan/` dan `desain/`. Isi `arsip/` disimpan sebagai jejak keputusan saja — lihat `arsip/README.md`.
 
 ## Referensi
 
@@ -44,13 +48,13 @@ Tidak satu pun dari keempat jurnal ini memakai sensor tekanan fisik atau panel m
 - Hardware + firmware saja — pengambilan data, analisis, dan penulisan skripsi dikerjakan client sendiri.
 - Biaya komponen direimburse terpisah dari fee jasa.
 - Deadline longgar (>2 minggu).
-- Rincian lengkap & angka fee: lihat `catatan/konteks-dan-spesifikasi.md` §3 dan §5, atau estimasi budget di riwayat percakapan.
+- Rincian lengkap & angka fee: lihat `catatan/konteks-dan-spesifikasi.md` §3 dan §5. Estimasi budget Rev. 06 ada di `arsip/gravity-fed/` (belum dihitung ulang untuk Rev. 07).
 
 ## Status & Blocker
 
 Dua hal ini **wajib selesai sebelum belanja komponen atau mulai fabrikasi**:
 
-1. **Konfirmasi budget ke client.** Desain saat ini (tiga zona + manometer 6 tabung) diestimasi Rp3,0–5,4 juta, jauh di atas kesepakatan awal Rp1,3–1,75 juta. Ada beberapa opsi pemangkasan (lihat riwayat percakapan / estimasi budget) — perlu dipilih bersama client, termasuk skenario budget Rp2 juta yang mengharuskan memilih antara manometer atau otomasi servo, tidak bisa dua-duanya.
+1. **Konfirmasi budget ke client.** Desain Rev. 06 (tiga zona + manometer 6 tabung, gravity-fed) diestimasi Rp3,0–5,4 juta, jauh di atas kesepakatan awal Rp1,3–1,75 juta. Target yang sedang dipakai: skenario **Rp2 juta total** (komponen + jasa) — belum dikonfirmasi client. Rev. 07 (pompa langsung) lebih hemat dan tetap interaktif walau tanpa servo, tapi budget-nya belum dihitung ulang.
 2. **Enam pertanyaan ke client** yang masih menggantung (fokus skripsi, data yang dibutuhkan Bab IV, variasi percobaan, toleransi error, batasan ukuran fisik, deadline pasti) — daftar lengkap di `catatan/konteks-dan-spesifikasi.md` §6.
 
 ## Riwayat desain (ringkas)

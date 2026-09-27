@@ -1,0 +1,293 @@
+<title>Peta Eksperimen Bernoulli</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1b222c; --paper: #f4f2ec; --stage: #e8e5de; --line: #d5cec0; --muted: #6e6859;
+    --bernoulli: #1f74b8; --hidro: #b0521f; --kontinuitas: #2b7d5c; --kontrol: #6a5a96;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e9e6dc; --paper: #13161a; --stage: #23272d; --line: #343941; --muted: #9a9486;
+      --bernoulli: #62a9dd; --hidro: #e0925c; --kontinuitas: #5cc79b; --kontrol: #a897d6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e9e6dc; --paper: #13161a; --stage: #23272d; --line: #343941; --muted: #9a9486;
+    --bernoulli: #62a9dd; --hidro: #e0925c; --kontinuitas: #5cc79b; --kontrol: #a897d6;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink); font-family: var(--font-body);
+    padding-inline: 20px;
+    padding-block: max(26px, env(safe-area-inset-top, 0px)) max(36px, env(safe-area-inset-bottom, 0px));
+  }
+  .wrap { max-width: 1100px; margin-inline: auto; }
+
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 16px; margin-bottom: 20px; }
+  .eyebrow { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px 0; }
+  h1 { font-size: clamp(1.45rem, 1.1rem + 1.5vw, 2rem); margin: 0 0 8px 0; line-height: 1.12; text-wrap: balance; letter-spacing: -.01em; }
+  header p { margin: 0; color: var(--muted); max-width: 68ch; font-size: .92rem; line-height: 1.5; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px 22px;
+    font-size: .84rem; margin-bottom: 18px;
+    padding: 11px 15px; background: var(--stage); border: 1px solid var(--line);
+  }
+  .legend .item { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 13px; height: 13px; border-radius: 50%; flex: none; }
+
+  .stage-frame { background: var(--stage); border: 1.5px solid var(--line); padding: 10px; }
+  svg { display: block; width: 100%; height: auto; }
+  figure { margin: 0 0 26px 0; }
+  figcaption { font-size: .82rem; color: var(--muted); margin-top: 9px; max-width: 78ch; line-height: 1.5; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .card {
+    background: var(--stage); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--ink));
+    padding: 12px 14px;
+  }
+  .card .head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .card .num {
+    flex: none; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--c, var(--ink)); color: #fff;
+    font-family: var(--font-mono); font-size: .68rem; font-weight: 700;
+    display: grid; place-items: center;
+  }
+  .card .tag { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .05em; text-transform: uppercase; color: var(--c, var(--muted)); font-weight: 600; }
+  .card h3 { margin: 2px 0 4px 0; font-size: .92rem; }
+  .card p { margin: 0; font-size: .82rem; color: var(--muted); line-height: 1.5; }
+
+  section h2 { font-family: var(--font-mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+
+  .pairs { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  .pairs th { text-align: left; font-family: var(--font-mono); font-size: .67rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 0 12px 7px 0; font-weight: 500; }
+  .pairs td { padding: 9px 12px 9px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .pairs td:first-child { font-family: var(--font-mono); white-space: nowrap; font-weight: 700; }
+  .pairs .pill { display: inline-block; padding: 1px 8px; border-radius: 20px; font-size: .72rem; font-family: var(--font-mono); font-weight: 600; color: #fff; }
+
+  footer { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .79rem; color: var(--muted); line-height: 1.6; }
+  footer code { font-family: var(--font-mono); background: var(--stage); padding: 1px 5px; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Peta eksperimen · versi visual</p>
+    <h1>Apa yang Dibuktikan di Mana</h1>
+    <p>Diagram alat yang sama, tapi tiap bagian ditandai dengan konsep fisika yang bisa diuji di situ. Warna penunjuk sama untuk diagram, kartu penjelasan, dan tabel perbandingan di bawah — jadi tinggal ikuti warnanya.</p>
+  </header>
+
+  <div class="legend">
+    <div class="item"><span class="dot" style="background:var(--bernoulli)"></span>Bernoulli (kecepatan berubah, tinggi tetap)</div>
+    <div class="item"><span class="dot" style="background:var(--hidro)"></span>Hidrostatis (tinggi berubah, kecepatan tetap)</div>
+    <div class="item"><span class="dot" style="background:var(--kontinuitas)"></span>Kontinuitas (debit tetap, kecepatan &amp; luas berubah)</div>
+    <div class="item"><span class="dot" style="background:var(--kontrol)"></span>Kontrol (input yang bisa diatur)</div>
+  </div>
+
+  <figure>
+    <div class="stage-frame">
+      <svg viewBox="0 0 1160 600" role="img" aria-label="Diagram skematik alat dengan penanda nomor berwarna: tangki sumber di kiri (oranye, hidrostatis), lalu pipa venturi mendatar dengan tiga titik sadap (biru, Bernoulli) yang tekanannya digambarkan sebagai batang naik-turun di panel atas, kemudian pipa naik dengan dua titik sadap (oranye, hidrostatis), lalu pipa menyempit lagi di ketinggian atas dengan satu titik sadap (biru, Bernoulli), sensor debit di awal dan akhir jalur ditandai hijau untuk kontinuitas, dan katup servo plus pompa di ditandai ungu untuk kontrol.">
+        <defs>
+          <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#8ec6e6"></stop>
+            <stop offset="100%" stop-color="#5aa3d0"></stop>
+          </linearGradient>
+        </defs>
+        <style>
+          .lbl { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; fill: var(--ink); }
+          .lbl-sm { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--muted); }
+          .num-c { stroke: #fff; stroke-width: 1.6; }
+          .num-t { fill: #fff; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 700; }
+          .pipe-o { stroke-width: 34; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+          .pipe-i { stroke: #eaf4fb; stroke-width: 28; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+        </style>
+
+        <!-- ===== pressure bar panel ===== -->
+        <rect x="190" y="60" width="760" height="150" fill="none" stroke="var(--line)" stroke-width="1.5"></rect>
+        <text x="200" y="52" class="lbl-sm">tinggi tekan terukur di tiap titik sadap</text>
+        <line x1="190" y1="200" x2="950" y2="200" stroke="var(--muted)" stroke-width="1"></line>
+
+        <rect x="235" y="70" width="30" height="130" fill="var(--bernoulli)" opacity=".8"></rect>
+        <rect x="385" y="150" width="30" height="50" fill="var(--bernoulli)" opacity=".8"></rect>
+        <rect x="500" y="85" width="30" height="115" fill="var(--bernoulli)" opacity=".8"></rect>
+        <rect x="630" y="100" width="30" height="100" fill="var(--hidro)" opacity=".8"></rect>
+        <rect x="760" y="105" width="30" height="95" fill="var(--hidro)" opacity=".8"></rect>
+        <rect x="875" y="160" width="30" height="40" fill="var(--bernoulli)" opacity=".8"></rect>
+
+        <text x="250" y="216" text-anchor="middle" class="lbl-sm">2</text>
+        <text x="400" y="216" text-anchor="middle" class="lbl-sm">3</text>
+        <text x="515" y="216" text-anchor="middle" class="lbl-sm">4</text>
+        <text x="645" y="216" text-anchor="middle" class="lbl-sm">5</text>
+        <text x="775" y="216" text-anchor="middle" class="lbl-sm">6</text>
+        <text x="890" y="216" text-anchor="middle" class="lbl-sm">7</text>
+
+        <!-- ===== apparatus schematic ===== -->
+
+        <!-- tangki sumber -->
+        <rect x="55" y="240" width="140" height="8" fill="var(--muted)"></rect>
+        <line x1="75" y1="248" x2="75" y2="500" stroke="var(--muted)" stroke-width="3"></line>
+        <line x1="175" y1="248" x2="175" y2="500" stroke="var(--muted)" stroke-width="3"></line>
+        <rect x="65" y="180" width="120" height="60" rx="2" fill="url(#waterGrad)" stroke="var(--hidro)" stroke-width="2.5"></rect>
+        <rect x="115" y="164" width="16" height="8" fill="var(--muted)"></rect>
+        <text x="125" y="160" text-anchor="middle" class="lbl-sm">HC-SR04</text>
+
+        <circle class="num-c" cx="26" cy="200" r="13" fill="var(--hidro)"></circle>
+        <text class="num-t" x="26" y="205" text-anchor="middle">1</text>
+        <text x="125" y="258" text-anchor="middle" class="lbl">Tangki sumber</text>
+
+        <!-- drop to test section -->
+        <line x1="125" y1="240" x2="125" y2="470" stroke="#7f9aab" stroke-width="10"></line>
+
+        <!-- zona A: venturi (biru) -->
+        <path class="pipe-o" d="M 125 470 L 330 470" stroke="var(--bernoulli)"></path>
+        <path class="pipe-i" d="M 125 470 L 330 470"></path>
+        <polygon points="330,455 380,465 380,475 330,485" fill="#eaf4fb" stroke="var(--bernoulli)" stroke-width="2"></polygon>
+        <path class="pipe-o" d="M 378 470 L 425 470" stroke="var(--bernoulli)"></path>
+        <path class="pipe-i" d="M 378 470 L 425 470"></path>
+        <polygon points="423,455 473,465 473,475 423,485" fill="#eaf4fb" stroke="var(--bernoulli)" stroke-width="2"></polygon>
+        <path class="pipe-o" d="M 471 470 L 560 470" stroke="var(--bernoulli)"></path>
+        <path class="pipe-i" d="M 471 470 L 560 470"></path>
+
+        <circle class="num-c" cx="250" cy="440" r="13" fill="var(--bernoulli)"></circle>
+        <text class="num-t" x="250" y="445" text-anchor="middle">2</text>
+        <circle class="num-c" cx="400" cy="500" r="13" fill="var(--bernoulli)"></circle>
+        <text class="num-t" x="400" y="505" text-anchor="middle">3</text>
+        <circle class="num-c" cx="515" cy="440" r="13" fill="var(--bernoulli)"></circle>
+        <text class="num-t" x="515" y="445" text-anchor="middle">4</text>
+        <text x="340" y="535" text-anchor="middle" class="lbl">zona A · venturi (tinggi tetap)</text>
+
+        <!-- S1 -->
+        <rect x="182" y="483" width="40" height="46" rx="3" fill="var(--kontinuitas)"></rect>
+        <text x="202" y="510" text-anchor="middle" class="num-t">S1</text>
+
+        <!-- zona B: naik (oranye) -->
+        <path class="pipe-o" d="M 560 470 L 700 370" stroke="var(--hidro)"></path>
+        <path class="pipe-i" d="M 560 470 L 700 370"></path>
+
+        <circle class="num-c" cx="628" cy="430" r="13" fill="var(--hidro)"></circle>
+        <text class="num-t" x="628" y="435" text-anchor="middle">5</text>
+        <circle class="num-c" cx="695" cy="345" r="13" fill="var(--hidro)"></circle>
+        <text class="num-t" x="695" y="350" text-anchor="middle">6</text>
+        <text x="635" y="290" text-anchor="middle" class="lbl">zona B · naik</text>
+        <text x="635" y="304" text-anchor="middle" class="lbl">(penampang tetap)</text>
+
+        <!-- zona C: reducer atas (biru) -->
+        <path class="pipe-o" d="M 700 370 L 770 370" stroke="var(--bernoulli)"></path>
+        <path class="pipe-i" d="M 700 370 L 770 370"></path>
+        <polygon points="770,355 815,363 815,377 770,385" fill="#eaf4fb" stroke="var(--bernoulli)" stroke-width="2"></polygon>
+        <path class="pipe-o" d="M 813 370 L 900 370" stroke="var(--bernoulli)"></path>
+        <path class="pipe-i" d="M 813 370 L 900 370"></path>
+
+        <circle class="num-c" cx="860" cy="340" r="13" fill="var(--bernoulli)"></circle>
+        <text class="num-t" x="860" y="345" text-anchor="middle">7</text>
+        <text x="860" y="305" text-anchor="middle" class="lbl">zona C · sempit lagi</text>
+        <text x="860" y="319" text-anchor="middle" class="lbl">(ketinggian lain)</text>
+
+        <!-- servo -->
+        <rect x="905" y="358" width="34" height="24" rx="3" fill="var(--kontrol)"></rect>
+        <circle class="num-c" cx="922" cy="410" r="13" fill="var(--kontrol)"></circle>
+        <text class="num-t" x="922" y="415" text-anchor="middle">9</text>
+        <text x="922" y="440" text-anchor="middle" class="lbl">katup servo</text>
+
+        <!-- S2 + reservoir + pump -->
+        <line x1="940" y1="370" x2="990" y2="370" stroke="#7f9aab" stroke-width="10"></line>
+        <rect x="960" y="345" width="40" height="46" rx="3" fill="var(--kontinuitas)"></rect>
+        <text x="980" y="372" text-anchor="middle" class="num-t">S2</text>
+
+        <line x1="990" y1="370" x2="990" y2="430" stroke="#7f9aab" stroke-width="10"></line>
+        <rect x="960" y="430" width="130" height="70" rx="2" fill="url(#waterGrad)" stroke="var(--kontrol)" stroke-width="2.5"></rect>
+        <circle cx="1025" cy="465" r="16" fill="var(--kontrol)"></circle>
+        <circle class="num-c" cx="1130" cy="465" r="13" fill="var(--kontrol)"></circle>
+        <text class="num-t" x="1130" y="470" text-anchor="middle">10</text>
+        <text x="1025" y="518" text-anchor="middle" class="lbl">tangki penampung + pompa</text>
+
+        <circle class="num-c" cx="1080" cy="330" r="13" fill="var(--kontinuitas)"></circle>
+        <text class="num-t" x="1080" y="335" text-anchor="middle">8</text>
+        <text x="1080" y="300" text-anchor="middle" class="lbl">S1 vs S2</text>
+        <text x="1080" y="314" text-anchor="middle" class="lbl">(kontinuitas)</text>
+        <line x1="1080" y1="343" x2="990" y2="365" stroke="var(--kontinuitas)" stroke-width="1.3" stroke-dasharray="3 3"></line>
+        <line x1="1070" y1="335" x2="222" y2="505" stroke="var(--kontinuitas)" stroke-width="1.3" stroke-dasharray="3 3" opacity=".5"></line>
+
+        <!-- ground -->
+        <line x1="30" y1="560" x2="1150" y2="560" stroke="var(--line)" stroke-width="1.5"></line>
+      </svg>
+    </div>
+    <figcaption>Batang di panel atas menunjukkan pola tinggi tekan yang sama seperti di gambar rancangan sebelumnya (jatuh di leher venturi, tetap di segmen naik, jatuh lagi di penyempitan atas) — hanya disederhanakan jadi grafik batang supaya polanya langsung kebaca tanpa detail konstruksi.</figcaption>
+  </figure>
+
+  <div class="card-grid">
+    <div class="card" style="--c:var(--hidro)">
+      <div class="head"><span class="num">1</span><span class="tag">Hidrostatis</span></div>
+      <h3>Tangki sumber</h3>
+      <p>Atur ketinggian (7/14/21 cm) → P=ρgh. Ini energi awal yang menggerakkan seluruh sistem.</p>
+    </div>
+    <div class="card" style="--c:var(--bernoulli)">
+      <div class="head"><span class="num">2</span><span class="tag">Bernoulli</span></div>
+      <h3>Sebelum venturi</h3>
+      <p>Titik acuan zona A — tekanan paling tinggi, kecepatan paling rendah di seluruh jalur bawah.</p>
+    </div>
+    <div class="card" style="--c:var(--bernoulli)">
+      <div class="head"><span class="num">3</span><span class="tag">Bernoulli</span></div>
+      <h3>Leher venturi</h3>
+      <p>Penampang menyempit → kecepatan naik → tekanan jatuh drastis. Inti pembuktian P+½ρv²=konstan.</p>
+    </div>
+    <div class="card" style="--c:var(--bernoulli)">
+      <div class="head"><span class="num">4</span><span class="tag">Bernoulli</span></div>
+      <h3>Setelah venturi</h3>
+      <p>Penampang melebar lagi, tekanan pulih — tapi tidak 100%. Selisih dari titik 2 = rugi gesek.</p>
+    </div>
+    <div class="card" style="--c:var(--hidro)">
+      <div class="head"><span class="num">5</span><span class="tag">Hidrostatis</span></div>
+      <h3>Tengah segmen naik</h3>
+      <p>Penampang tetap, hanya posisi naik. Tekanan turun sebanding dengan kenaikan tinggi.</p>
+    </div>
+    <div class="card" style="--c:var(--hidro)">
+      <div class="head"><span class="num">6</span><span class="tag">Hidrostatis</span></div>
+      <h3>Atas segmen naik</h3>
+      <p>Tinggi tekan (P/ρg+h) tetap sama dari titik 4 — walau posisinya jauh lebih tinggi.</p>
+    </div>
+    <div class="card" style="--c:var(--bernoulli)">
+      <div class="head"><span class="num">7</span><span class="tag">Bernoulli</span></div>
+      <h3>Penyempitan atas</h3>
+      <p>Ulangi pola titik 2→3, tapi di ketinggian berbeda — buktikan hukumnya konsisten di mana saja.</p>
+    </div>
+    <div class="card" style="--c:var(--kontinuitas)">
+      <div class="head"><span class="num">8</span><span class="tag">Kontinuitas</span></div>
+      <h3>S1 dibanding S2</h3>
+      <p>Q₁≈Q₂ (debit sama, kekekalan massa), tapi v₁≠v₂ karena A₁≠A₂ — dua sensor, satu hukum.</p>
+    </div>
+    <div class="card" style="--c:var(--kontrol)">
+      <div class="head"><span class="num">9</span><span class="tag">Kontrol</span></div>
+      <h3>Katup servo</h3>
+      <p>Ubah bukaan → seluruh pola tekanan bergeser bersama. Sumber variasi data untuk grafik.</p>
+    </div>
+    <div class="card" style="--c:var(--kontrol)">
+      <div class="head"><span class="num">10</span><span class="tag">Kontrol</span></div>
+      <h3>Pompa — 3 mode</h3>
+      <p>Isi (set ketinggian awal) · Tahan (data stabil berulang) · Mati (ketinggian turun bebas).</p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Lima perbandingan yang bisa langsung diambil datanya</h2>
+    <table class="pairs">
+      <thead><tr><th style="width:90px">Titik</th><th style="width:130px">Isolasi</th><th>Membuktikan</th></tr></thead>
+      <tbody>
+        <tr><td>2 ↔ 3</td><td><span class="pill" style="background:var(--bernoulli)">Bernoulli</span></td><td>Tekanan jatuh saat kecepatan naik di leher venturi.</td></tr>
+        <tr><td>2 ↔ 4</td><td><span class="pill" style="background:var(--bernoulli)">Bernoulli</span></td><td>Rugi gesek — selisih yang tidak kembali setelah pemulihan.</td></tr>
+        <tr><td>4 ↔ 6</td><td><span class="pill" style="background:var(--hidro)">Hidrostatis</span></td><td>Tinggi tekan kekal sepanjang kenaikan, tanpa perubahan kecepatan.</td></tr>
+        <tr><td>2 ↔ 7</td><td><span class="pill" style="background:var(--bernoulli)">Bernoulli lengkap</span></td><td>Beda kecepatan &amp; beda ketinggian sekaligus — semua suku persamaan aktif.</td></tr>
+        <tr><td>S1 ↔ S2</td><td><span class="pill" style="background:var(--kontinuitas)">Kontinuitas</span></td><td>Debit tetap sama; kecepatan yang menyesuaikan luas penampang.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    Diagram skematik, bukan gambar konstruksi — untuk itu lihat sketsa rancangan tampak depan (Rev. 06) yang terpisah. Tinggi batang tekanan di sini ilustrasi pola, bukan hasil hitungan. Acuan teknis lengkap: <code>catatan/konteks-dan-spesifikasi.md</code>.
+  </footer>
+
+</div>

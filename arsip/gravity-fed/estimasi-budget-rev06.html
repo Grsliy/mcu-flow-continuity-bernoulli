@@ -1,0 +1,330 @@
+<title>Estimasi Budget Alat Fluida</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1b222c; --paper: #f4f2ec; --stage: #e9e6df; --line: #d5cec0; --muted: #6e6859;
+    --accent: #1f74b8; --warn: #b0521f; --good: #2b7d5c;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e9e6dc; --paper: #13161a; --stage: #23272d; --line: #343941; --muted: #9a9486;
+      --accent: #62a9dd; --warn: #e0925c; --good: #5cc79b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e9e6dc; --paper: #13161a; --stage: #23272d; --line: #343941; --muted: #9a9486;
+    --accent: #62a9dd; --warn: #e0925c; --good: #5cc79b;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink); font-family: var(--font-body);
+    padding-inline: 20px;
+    padding-block: max(26px, env(safe-area-inset-top, 0px)) max(36px, env(safe-area-inset-bottom, 0px));
+  }
+  .wrap { max-width: 980px; margin-inline: auto; }
+
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 15px; margin-bottom: 20px; }
+  .eyebrow { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px 0; }
+  h1 { font-size: clamp(1.4rem, 1.1rem + 1.4vw, 1.9rem); margin: 0 0 8px 0; line-height: 1.12; letter-spacing: -.01em; }
+  header p { margin: 0; color: var(--muted); max-width: 70ch; font-size: .9rem; line-height: 1.55; }
+
+  .alert {
+    border: 1.5px solid var(--warn); border-left-width: 5px;
+    background: var(--stage); padding: 14px 17px; margin-bottom: 24px;
+  }
+  .alert h2 { margin: 0 0 6px 0; font-size: .95rem; color: var(--warn); font-family: var(--font-body); text-transform: none; letter-spacing: 0; border: 0; padding: 0; }
+  .alert p { margin: 0; font-size: .86rem; line-height: 1.55; }
+  .alert p + p { margin-top: 7px; }
+
+  section { margin-bottom: 30px; }
+  section h2 {
+    font-family: var(--font-mono); font-size: .76rem; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+  }
+  .hint { font-size: .82rem; color: var(--muted); margin: 0 0 12px 0; line-height: 1.5; }
+
+  table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  th { text-align: left; font-family: var(--font-mono); font-size: .66rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; padding: 0 10px 8px 0; }
+  td { padding: 8px 10px 8px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  td.num, th.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; padding-right: 0; }
+  tr.sum td { border-top: 2px solid var(--ink); font-weight: 700; }
+  tr.sum td.num { font-weight: 700; }
+  .grp td { background: var(--stage); font-family: var(--font-mono); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 7px 10px 7px 8px; }
+
+  .opt-table td:first-child { font-weight: 600; }
+  .opt-table .tot { font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+  .pick { background: color-mix(in srgb, var(--good) 11%, transparent); }
+  .badge { display: inline-block; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; background: var(--good); color: #fff; margin-left: 7px; vertical-align: 1px; }
+
+  .scroll { overflow-x: auto; }
+  .note-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+  .note { border: 1px solid var(--line); border-left: 4px solid var(--c, var(--muted)); background: var(--stage); padding: 12px 14px; }
+  .note h3 { margin: 0 0 5px 0; font-size: .9rem; }
+  .note p { margin: 0; font-size: .82rem; color: var(--muted); line-height: 1.5; }
+
+  footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .78rem; color: var(--muted); line-height: 1.6; }
+  footer code { font-family: var(--font-mono); background: var(--stage); padding: 1px 5px; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Estimasi biaya · September 2026</p>
+    <h1>Budget Alat Praktikum Fluida Dinamis</h1>
+    <p>Dihitung ulang dari nol untuk rancangan Rev. 06 (tiga zona uji, panel manometer 6 tabung, panjang ± 120 cm), lengkap dengan empat opsi pemangkasan kalau angkanya terlalu tinggi.</p>
+  </header>
+
+  <div class="alert">
+    <h2>Angkanya sudah jauh dari kesepakatan awal</h2>
+    <p>Kesepakatan pertama ada di kisaran <strong>Rp1,3–1,75 juta</strong>. Rancangan sekarang — setelah manometer, kontrol servo, sensor ketinggian, dan susunan tiga zona masuk — jatuh di <strong>Rp3,0–5,4 juta</strong>, sekitar dua sampai tiga kali lipat.</p>
+    <p>Jangan belanja apa pun sebelum ini dibicarakan ulang dengan client. Tabel opsi di bawah dibuat khusus untuk percakapan itu: tiap baris menunjukkan apa yang hilang kalau dipangkas.</p>
+    <p><strong>Kalau budget dikunci di Rp2 juta</strong>, langsung lompat ke bagian kedua — di situ angkanya dipecah jadi komponen vs jasa, lengkap dengan konsekuensi tiap pilihan.</p>
+  </div>
+
+  <section>
+    <h2>Lima opsi, dari termahal ke termurah</h2>
+    <p class="hint">Semua angka sudah termasuk komponen + jasa. Komponen ditanggung client terpisah, jadi kolom terakhir adalah total yang perlu client siapkan.</p>
+    <div class="scroll">
+      <table class="opt-table">
+        <thead>
+          <tr>
+            <th style="min-width:210px">Opsi</th>
+            <th>Yang didapat</th>
+            <th class="num">Komponen</th>
+            <th class="num">Jasa</th>
+            <th class="num">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>A · Rev. 06 lengkap</td>
+            <td>Tiga zona (venturi + naik + sempit di atas), manometer 6 tabung</td>
+            <td class="num">1,26 – 2,23 jt</td>
+            <td class="num">1,75 – 3,15 jt</td>
+            <td class="tot">3,0 – 5,4 jt</td>
+          </tr>
+          <tr class="pick">
+            <td>B · Rev. 05 <span class="badge">saran</span></td>
+            <td>Dua zona (venturi + naik), manometer 5 tabung — tanpa replikasi zona C</td>
+            <td class="num">1,14 – 2,03 jt</td>
+            <td class="num">1,50 – 2,73 jt</td>
+            <td class="tot">2,6 – 4,8 jt</td>
+          </tr>
+          <tr>
+            <td>C · Venturi mendatar</td>
+            <td>Seperti alat komersial: venturi + manometer 4 tabung, tanpa segmen naik</td>
+            <td class="num">0,95 – 1,60 jt</td>
+            <td class="num">1,30 – 2,30 jt</td>
+            <td class="tot">2,3 – 3,9 jt</td>
+          </tr>
+          <tr>
+            <td>D · Tanpa manometer</td>
+            <td>Venturi + 2 sensor + servo + sensor ketinggian; tekanan dihitung, tidak diukur</td>
+            <td class="num">0,90 – 1,50 jt</td>
+            <td class="num">1,10 – 1,90 jt</td>
+            <td class="tot">2,0 – 3,4 jt</td>
+          </tr>
+          <tr>
+            <td>E · Versi dasar</td>
+            <td>Setara jurnal referensi: 2 sensor + LCD + pompa, tanpa manometer/servo/ultrasonik</td>
+            <td class="num">0,55 – 0,85 jt</td>
+            <td class="num">0,80 – 1,20 jt</td>
+            <td class="tot">1,35 – 2,05 jt</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kalau budget dikunci di Rp2 juta</h2>
+    <p class="hint">Komponen akan memakan sekitar Rp1 juta apa pun pilihannya — sisa Rp1 juta itulah jasa. Jadi yang menentukan kelayakan fee bukan harga komponen, tapi <strong>berapa jam kerja</strong> yang tersisa untuk dibagi Rp1 juta itu.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:190px">Jalur</th>
+            <th>Yang dipertahankan</th>
+            <th class="num">Komponen</th>
+            <th class="num">Jasa</th>
+            <th class="num">Jam</th>
+            <th class="num">Per jam</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="pick">
+            <td>F · Manometer saja <span class="badge">saran</span></td>
+            <td>Venturi + manometer 4 tabung + 2 sensor. Kran diputar manual, ketinggian dibaca dari skala tangki</td>
+            <td class="num">± 975.000</td>
+            <td class="num">± 1.025.000</td>
+            <td class="num">38 – 48</td>
+            <td class="num">± 24.000</td>
+          </tr>
+          <tr>
+            <td>G · Otomasi saja</td>
+            <td>Servo + sensor ketinggian + 3 mode pompa. Tekanan dihitung dari kecepatan, tidak diukur</td>
+            <td class="num">± 1.000.000</td>
+            <td class="num">± 1.000.000</td>
+            <td class="num">45 – 55</td>
+            <td class="num">± 20.000</td>
+          </tr>
+          <tr>
+            <td>H · Dua-duanya, minimal</td>
+            <td>Manometer sederhana + servo SG90 murah. Semua serba pas-pasan</td>
+            <td class="num">± 1.000.000</td>
+            <td class="num">± 1.000.000</td>
+            <td class="num">50 – 60</td>
+            <td class="num">± 18.000</td>
+          </tr>
+          <tr>
+            <td>E · Versi dasar</td>
+            <td>2 sensor + LCD + pompa saja, setara jurnal referensi</td>
+            <td class="num">± 700.000</td>
+            <td class="num">± 1.300.000</td>
+            <td class="num">30 – 40</td>
+            <td class="num">± 37.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note-grid" style="margin-top:18px">
+      <div class="note" style="--c:var(--warn)">
+        <h3>Yang tidak mungkin di Rp2 juta</h3>
+        <p>Opsi A, B, dan C. Komponennya saja sudah Rp0,95–2,2 juta, jadi sisa untuk jasa tinggal Rp0–1 juta untuk 50–90 jam kerja — setara Rp8.000–13.000 per jam. Itu bukan diskon, itu rugi.</p>
+      </div>
+      <div class="note" style="--c:var(--accent)">
+        <h3>Interaktif tidak harus otomatis</h3>
+        <p>Di jalur F servo dilepas, tapi konsep "input mengubah output" tetap hidup: siswa memutar kran manual, keenam kolom manometer langsung bergerak. Yang hilang otomasinya, bukan interaktivitasnya — malah jadi lebih taktil.</p>
+      </div>
+      <div class="note" style="--c:var(--warn)">
+        <h3>Tapi ini melanggar permintaan awal client</h3>
+        <p>Client secara eksplisit minta kontrol dari mikrokontroler ("input yang benar-benar mengontrol kondisi fisik"). Melepas servo di jalur F berarti mengubah kesepakatan itu — harus dibicarakan, bukan diputuskan sepihak.</p>
+      </div>
+      <div class="note" style="--c:var(--good)">
+        <h3>Kenapa manometer yang dipertahankan</h3>
+        <p>Alat ini untuk data skripsi. Tekanan yang <em>terukur</em> jauh lebih kuat dipertanggungjawabkan di sidang daripada tekanan yang <em>dihitung</em> dari kecepatan. Nilai akademiknya paling tinggi per rupiah.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Rincian komponen — opsi A</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th style="min-width:250px">Item</th><th class="num">Bawah</th><th class="num">Atas</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="3">Elektronik</td></tr>
+          <tr><td>Arduino Uno R3 (compatible)</td><td class="num">65.000</td><td class="num">90.000</td></tr>
+          <tr><td>Sensor flow YF-S201 (S1, pipa besar)</td><td class="num">35.000</td><td class="num">39.000</td></tr>
+          <tr><td>Sensor flow YF-S401 (S2, pipa kecil)</td><td class="num">45.000</td><td class="num">65.000</td></tr>
+          <tr><td>LCD 20x4 I2C</td><td class="num">45.000</td><td class="num">65.000</td></tr>
+          <tr><td>Sensor ultrasonik HC-SR04</td><td class="num">8.000</td><td class="num">15.000</td></tr>
+          <tr><td>Servo MG996R (torsi besar)</td><td class="num">45.000</td><td class="num">60.000</td></tr>
+          <tr><td>Modul MOSFET + dioda flyback</td><td class="num">9.000</td><td class="num">18.000</td></tr>
+          <tr><td>Potensio, tombol, buzzer, LED</td><td class="num">18.000</td><td class="num">38.000</td></tr>
+          <tr><td>Breadboard/PCB + kabel jumper</td><td class="num">30.000</td><td class="num">50.000</td></tr>
+          <tr><td>Adaptor 12V 3A</td><td class="num">45.000</td><td class="num">70.000</td></tr>
+
+          <tr class="grp"><td colspan="3">Mekanik &amp; hidrolik</td></tr>
+          <tr><td>Pompa celup DC 12V ~800 L/jam</td><td class="num">80.000</td><td class="num">120.000</td></tr>
+          <tr><td>Pipa akrilik bening (2 diameter, ± 120 cm)</td><td class="num">150.000</td><td class="num">280.000</td></tr>
+          <tr><td>Fitting PVC (venturi, reducer, elbow, union)</td><td class="num">60.000</td><td class="num">120.000</td></tr>
+          <tr><td>Tangki sumber akrilik berskala</td><td class="num">70.000</td><td class="num">130.000</td></tr>
+          <tr><td>Tangki penampung</td><td class="num">30.000</td><td class="num">50.000</td></tr>
+          <tr><td>Rangka/rak (lebih tinggi &amp; panjang)</td><td class="num">120.000</td><td class="num">250.000</td></tr>
+          <tr><td>Papan dasar + kaki adjustable</td><td class="num">80.000</td><td class="num">150.000</td></tr>
+          <tr><td>Katup kontrol + kran pembuang udara</td><td class="num">40.000</td><td class="num">70.000</td></tr>
+          <tr><td>Selang, klem, sealant, lem akrilik</td><td class="num">50.000</td><td class="num">90.000</td></tr>
+
+          <tr class="grp"><td colspan="3">Panel manometer</td></tr>
+          <tr><td>6 tabung bening Ø6–8 mm</td><td class="num">60.000</td><td class="num">120.000</td></tr>
+          <tr><td>6 nipple sadap kuningan</td><td class="num">30.000</td><td class="num">60.000</td></tr>
+          <tr><td>Selang bening 6 jalur</td><td class="num">25.000</td><td class="num">45.000</td></tr>
+          <tr><td>Papan manometer + skala cetak</td><td class="num">40.000</td><td class="num">80.000</td></tr>
+
+          <tr class="grp"><td colspan="3">Lain-lain</td></tr>
+          <tr><td>Ongkir &amp; buffer belanja</td><td class="num">80.000</td><td class="num">150.000</td></tr>
+
+          <tr class="sum"><td>Total komponen</td><td class="num">1.260.000</td><td class="num">2.225.000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Rincian jasa — opsi A</h2>
+    <p class="hint">Dihitung dari jam kerja, bukan tebakan kasar. Tarif yang dipakai Rp25.000–35.000 per jam untuk pengerja yang sudah familiar elektronika.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th style="min-width:250px">Tahap</th><th class="num">Jam</th><th class="num">Catatan</th></tr></thead>
+        <tbody>
+          <tr><td>Desain final &amp; perhitungan dimensi</td><td class="num">4 – 6</td><td class="num">rasio penampang, posisi sadap</td></tr>
+          <tr><td>Survei harga &amp; belanja</td><td class="num">4 – 6</td><td class="num">beberapa toko</td></tr>
+          <tr><td>Fabrikasi venturi akrilik</td><td class="num">6 – 12</td><td class="num">bagian tersulit</td></tr>
+          <tr><td>Perakitan rangka &amp; papan dasar</td><td class="num">5 – 8</td><td class="num"></td></tr>
+          <tr><td>Pemasangan pipa, fitting, sealing</td><td class="num">6 – 10</td><td class="num">anti bocor</td></tr>
+          <tr><td>Bor &amp; pasang 6 titik sadap</td><td class="num">5 – 8</td><td class="num">presisi tinggi</td></tr>
+          <tr><td>Panel manometer + kalibrasi skala</td><td class="num">4 – 6</td><td class="num"></td></tr>
+          <tr><td>Wiring elektronik</td><td class="num">4 – 6</td><td class="num"></td></tr>
+          <tr><td>Firmware (3 mode pompa, servo, 3 sensor, LCD)</td><td class="num">10 – 16</td><td class="num">porsi terbesar</td></tr>
+          <tr><td>Kalibrasi sensor flow (5× per sensor)</td><td class="num">3 – 5</td><td class="num"></td></tr>
+          <tr><td>Kalibrasi servo (sudut ↔ bukaan ↔ debit)</td><td class="num">2 – 4</td><td class="num"></td></tr>
+          <tr><td>Uji kebocoran &amp; pembuangan udara</td><td class="num">4 – 8</td><td class="num">sering berulang</td></tr>
+          <tr><td>Testing keseluruhan &amp; debugging</td><td class="num">5 – 10</td><td class="num"></td></tr>
+          <tr><td>Serah terima &amp; panduan pakai</td><td class="num">2 – 3</td><td class="num"></td></tr>
+          <tr class="sum"><td>Total</td><td class="num">70 – 90 jam</td><td class="num">1,75 – 3,15 jt</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kalau harus dipangkas, urutannya begini</h2>
+    <div class="note-grid">
+      <div class="note" style="--c:var(--good)">
+        <h3>Pangkas pertama: zona C</h3>
+        <p>Nilai tambahnya paling kecil — cuma mengulang pembuktian zona A di ketinggian lain. Hemat ± Rp400–600 rb, dan alat jadi 20 cm lebih pendek. Ini yang jadi opsi B.</p>
+      </div>
+      <div class="note" style="--c:var(--good)">
+        <h3>Pangkas kedua: segmen naik</h3>
+        <p>Hilang suku ρgh dari test section, tapi pengaruh ketinggian masih bisa diteliti lewat variasi tangki sumber. Hemat ± Rp300–900 rb, sekaligus menghapus masalah udara terperangkap.</p>
+      </div>
+      <div class="note" style="--c:var(--warn)">
+        <h3>Jangan dipangkas: manometer</h3>
+        <p>Ini satu-satunya bagian yang membuat tekanan <em>terukur</em>, bukan dihitung. Peningkatan kredibilitas data terbesar per rupiah — hematnya cuma ± Rp250–500 rb tapi kehilangannya besar.</p>
+      </div>
+      <div class="note" style="--c:var(--warn)">
+        <h3>Jangan dipangkas: kalibrasi</h3>
+        <p>Godaan terbesar saat budget ketat adalah memotong jam kalibrasi dan uji bocor. Tapi tanpa itu, seluruh data jadi tidak bisa dipertanggungjawabkan di sidang.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Asumsi yang dipakai</h2>
+    <div class="note-grid">
+      <div class="note">
+        <h3>Harga komponen</h3>
+        <p>Kisaran marketplace September 2026. Beberapa item (Arduino, YF-S201, LCD, pompa) sudah dicek langsung; sisanya estimasi pasaran.</p>
+      </div>
+      <div class="note">
+        <h3>Venturi akrilik</h3>
+        <p>Diasumsikan dibentuk dari fitting + pipa akrilik. Kalau pesan bubut custom ke tukang, biayanya bisa naik Rp150–400 rb tapi jam kerja fabrikasi berkurang.</p>
+      </div>
+      <div class="note">
+        <h3>Belum termasuk</h3>
+        <p>Komponen rusak saat perakitan, revisi desain di tengah jalan, atau biaya transport ke lab client saat serah terima.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Estimasi ini menggantikan angka lama di <code>catatan/konteks-dan-spesifikasi.md</code> §5, yang dihitung sebelum susunan tiga zona dan panjang ± 120 cm masuk ke rancangan. Dua hal masih memblokir belanja: konfirmasi client atas angka ini, dan keputusan opsi A sampai E.
+  </footer>
+
+</div>

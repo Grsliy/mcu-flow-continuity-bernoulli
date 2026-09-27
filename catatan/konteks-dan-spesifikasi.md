@@ -1,6 +1,6 @@
 # Konteks & Spesifikasi Project
 
-> Catatan hidup — diperbarui seiring diskusi dengan client. Ini acuan kerja utama, beda dari `draft-desain-awal.md` yang sudah usang.
+> Catatan hidup — diperbarui seiring diskusi dengan client. Ini acuan kerja utama. Sketsa aktif: `desain/rancangan-alat.html`; hitungan dimensi: `desain/perhitungan/`. Materi usang ada di `arsip/`.
 
 ## 1. Ringkasan Project
 
@@ -35,7 +35,8 @@ Freelance job: membuat **alat praktikum fluida dinamis berbasis mikrokontroler**
 - Aliran: Tangki → pompa → pipa besar + **S1** → **zona A** venturi mendatar → **zona B** segmen naik (Δh ≈ 12 cm, penampang tetap) → **zona C** reducer di atas + **S2** → kran pembuang udara → **katup hilir servo** → kembali ke tangki.
 - Energi aliran berasal dari pompa ("tinggi setara"/head pompa), bukan dari tinggi air tangki. Secara fisika setara: pada Q yang sama, bacaan manometer identik dengan versi tangki tinggi. Selisih kolom hanya bergantung pada Q dan ukuran pipa.
 - **Penting**: S1 dan S2 wajib di penampang yang benar-benar berbeda (A₁ ≠ A₂). Sketsa versi pertama keliru menaruh keduanya di pipa berukuran sama — sudah dikoreksi dengan reducer sebelum S2.
-- Sketsa acuan: artifact "Rancangan Alat Bernoulli" Rev. 07.
+- Sketsa acuan: `desain/rancangan-alat.html` (Rev. 07).
+- Debit kerja **3–6 L/min** (hitungan: `desain/perhitungan/01-pipa-dan-debit.md`).
 
 *Arsitektur lama gravity-fed (tangki sumber di rak + tangki penampung, Rev. 03–06) dibatalkan — lihat §7.*
 
@@ -120,7 +121,7 @@ Gampang terlewat saat fabrikasi, tapi bisa membatalkan validitas seluruh data:
 
 ## 5. Estimasi Biaya (Berjalan)
 
-> ⚠️ **Tabel di bawah belum diperbarui ke Rev. 07.** Perubahan yang perlu dihitung ulang: rak & tangki kedua hilang (hemat), pompa AC 800 L/jam diganti pompa DC PWM, fee #1 & #4 berubah isi, tabung manometer mungkin lebih tinggi. Estimasi budget terbaru (Rp3,0–5,4 jt untuk desain tiga zona) ada di artifact estimasi budget, juga belum disesuaikan.
+> ⚠️ **Tabel di bawah belum diperbarui ke Rev. 07.** Perubahan yang perlu dihitung ulang: rak & tangki kedua hilang (hemat), pompa AC 800 L/jam diganti pompa DC PWM, fee #1 & #4 berubah isi, tabung manometer mungkin lebih tinggi. Estimasi budget terakhir (Rp3,0–5,4 jt untuk Rev. 06) ada di `arsip/gravity-fed/estimasi-budget-rev06.html`. Target kerja saat ini: **Rp2 juta total** (belum dikonfirmasi client).
 
 | Pos | Estimasi |
 |---|---|
@@ -162,12 +163,12 @@ Gampang terlewat saat fabrikasi, tapi bisa membatalkan validitas seluruh data:
 ## 7. Log Keputusan
 
 - **Repo GitHub**: `github.com/Grsliy/mcu-flow-continuity-bernoulli` — sudah dibuat & di-push.
-- **Folder project**: `referensi/` (3 jurnal), `catatan/` (dokumen kerja, termasuk file ini).
+- **Folder project** (dirapikan 2026-09-27): `referensi/` (4 jurnal), `catatan/` (file ini), `desain/` (sketsa aktif + `perhitungan/`), `arsip/` (draft awal + materi gravity-fed Rev. 06).
 - Firmware versi pertama sudah dihapus — akan ditulis ulang setelah desain final terkunci. Konsep POE (prediksi dulu) sudah digantikan kontrol fisik nyata; sisa jejaknya cuma di mode tantangan (Fitur #3).
 - Fitur #2 (kontrol bukaan valve via servo) ditambahkan sebagai fitur interaktif kedua — perlu konfirmasi ulang ke client soal kenaikan biaya karena signifikan dari estimasi awal (lihat §5).
 - Fitur #3 (pewarna air, sonifikasi nada, mode tantangan target) ditambahkan sebagai fitur presentasi/engagement — murni software+komponen yang sudah ada, dampak biaya kecil dibanding fitur #1 dan #2.
 - **Fitur #4 ditambahkan** (ketinggian tangki sumber sebagai variabel tekanan hidrostatis, P=ρgh ala Mulianti) — ini memicu **revisi arsitektur fisik** jadi gravity-fed (§4.1a): Tangki Sumber elevated di rak, air turun karena gravitasi, pompa (Fitur #1) berubah peran jadi isi-ulang otomatis alih-alih dorong aliran langsung. Perlu dikonfirmasi ke client apakah reframing peran pompa ini bisa diterima, atau tetap butuh kontrol debit real-time terpisah (→ pompa kedua, biaya tambahan).
-- Sketsa sistem (diagram blok + tampak samping) sudah dipublikasikan sebagai artifact.
+- Sketsa sistem (diagram blok + tampak samping) sudah dibuat (kini di `arsip/gravity-fed/sketsa-sistem.html`).
 - **Fitur #5 ditambahkan**: panel manometer 6 tabung, mengikuti referensi foto alat komersial dari client. Ini menjadikan tekanan **terukur langsung**, bukan lagi dihitung — peningkatan kredibilitas data yang paling besar sejauh ini, sekaligus tambahan biaya terbesar.
 - **Koreksi desain penting**: sketsa versi pertama menaruh S1 dan S2 di penampang berukuran sama (venturi melebar kembali), sehingga v₁ = v₂ dan tidak membuktikan apa-apa. Diperbaiki di Rev. 02 dengan menambah reducer sebelum S2.
 - **Peran pompa diperjelas**: tiga mode (Isi / Tahan / Mati). Mode Tahan = constant head tank elektronik, bikin data tunak & bisa diulang. Rencana "pompa kedua" dibatalkan — tidak diperlukan.

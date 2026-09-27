@@ -1,0 +1,483 @@
+<title>Sketsa Sistem Fluida Dinamis</title>
+<style>
+  :root {
+    --ink: #1c2430;
+    --paper: #f6f3ec;
+    --paper-2: #eae4d6;
+    --water: #2f76a6;
+    --water-fill: #cfe3ee;
+    --input: #2b7d5c;
+    --output: #b85a24;
+    --muted: #726b5c;
+    --line: #d8d0bd;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e9e6dc;
+      --paper: #14171c;
+      --paper-2: #1e2228;
+      --water: #6fb1da;
+      --water-fill: #223b48;
+      --input: #5ccb9a;
+      --output: #e2924f;
+      --muted: #9c9686;
+      --line: #33372f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e9e6dc;
+    --paper: #14171c;
+    --paper-2: #1e2228;
+    --water: #6fb1da;
+    --water-fill: #223b48;
+    --input: #5ccb9a;
+    --output: #e2924f;
+    --muted: #9c9686;
+    --line: #33372f;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    padding-inline: 20px;
+    padding-block: max(24px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
+  }
+  .wrap { max-width: 1080px; margin-inline: auto; }
+
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem);
+    line-height: 1.15;
+    margin: 0 0 6px 0;
+    text-wrap: balance;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    max-width: 60ch;
+    font-size: 0.95rem;
+  }
+  .titleblock {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    border: 1.5px solid var(--ink);
+    padding: 10px 14px;
+    min-width: 220px;
+    line-height: 1.7;
+  }
+  .titleblock .row { display: flex; justify-content: space-between; gap: 16px; }
+  .titleblock .row + .row { border-top: 1px dashed var(--line); padding-top: 3px; margin-top: 3px; }
+  .titleblock .k { color: var(--muted); }
+
+  .diagram-heading {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin: 0 0 10px 0;
+  }
+  figure { margin: 0 0 28px 0; }
+  .diagram-frame {
+    border: 1.5px solid var(--ink);
+    background: var(--paper-2);
+    padding: 10px;
+  }
+  svg { display: block; width: 100%; height: auto; }
+  figcaption {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 10px;
+    max-width: 75ch;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-size: 0.85rem;
+    margin-bottom: 32px;
+    padding: 12px 16px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+  }
+  .legend .item { display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; flex: none; }
+
+  section.notes { margin-bottom: 24px; }
+  section.notes h2 {
+    font-size: 1.05rem;
+    margin: 0 0 12px 0;
+    font-family: var(--font-mono);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .fitur-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px;
+  }
+  .fitur-card {
+    border: 1px solid var(--line);
+    padding: 14px 16px;
+    background: var(--paper-2);
+  }
+  .fitur-card .tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .fitur-card h3 { margin: 4px 0 6px 0; font-size: 1rem; }
+  .fitur-card p { margin: 0; font-size: 0.85rem; color: var(--muted); }
+  .fitur-card.input-tag .tag { color: var(--input); }
+  .fitur-card.output-tag .tag { color: var(--output); }
+
+  footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  footer code {
+    font-family: var(--font-mono);
+    background: var(--paper-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 480px) {
+    .titleblock { min-width: 0; width: 100%; }
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Sketsa Sistem — Alat Fluida Dinamis Interaktif</h1>
+      <p>Dua sudut pandang: diagram blok (hubungan sinyal) dan tampak samping (tata letak fisik, gravity-fed dengan tangki sumber elevated) — menghubungkan input yang bisa diatur user dengan output yang mengikutinya.</p>
+    </div>
+    <div class="titleblock">
+      <div class="row"><span class="k">STATUS</span><span>draft kasar</span></div>
+      <div class="row"><span class="k">REV</span><span>01</span></div>
+      <div class="row"><span class="k">SKALA</span><span>NTS*</span></div>
+      <div class="row"><span class="k">ACUAN</span><span>catatan/konteks</span></div>
+    </div>
+  </header>
+
+  <h2 class="diagram-heading">1. Diagram Blok — Hubungan Sinyal</h2>
+  <figure>
+    <div class="diagram-frame">
+      <svg viewBox="0 0 1000 700" role="img" aria-label="Diagram mekanisme alat: jalur air dari tangki sumber melalui pompa, sensor flow 1, penyempitan venturi dengan katup servo, sensor flow 2, ke tangki penampung dengan sirkulasi balik; di bawahnya, hub kontrol MCU menerima input dari sensor ultrasonik ketinggian, potensiometer, dan kedua sensor flow, lalu mengeluarkan sinyal ke pompa (isi-ulang), servo, LCD, buzzer, dan LED.">
+        <defs>
+          <marker id="arrowInput" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="fillInput"></path>
+          </marker>
+          <marker id="arrowOutput" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="fillOutput"></path>
+          </marker>
+          <marker id="arrowWater" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="fillWater"></path>
+          </marker>
+        </defs>
+
+        <style>
+          text { font-family: 'IBM Plex Sans', sans-serif; fill: var(--ink); }
+          .mono { font-family: 'IBM Plex Mono', monospace; }
+          .strokeInk { stroke: var(--ink); }
+          .fillInk { fill: var(--ink); }
+          .fillPaper2 { fill: var(--paper-2); }
+          .strokeWater { stroke: var(--water); }
+          .fillWater { fill: var(--water); }
+          .fillWaterTint { fill: var(--water-fill); }
+          .strokeInput { stroke: var(--input); }
+          .fillInput { fill: var(--input); }
+          .strokeOutput { stroke: var(--output); }
+          .fillOutput { fill: var(--output); }
+          .strokeMuted { stroke: var(--muted); }
+          .fillMuted { fill: var(--muted); }
+          .lbl { font-size: 14px; }
+          .lbl-sm { font-size: 11.5px; }
+          .lbl-sec { font-size: 17px; font-weight: 600; letter-spacing: 0.04em; }
+          .lbl-box { font-size: 15px; font-weight: 600; }
+        </style>
+
+        <!-- ===================== ZONE 1 : JALUR AIR ===================== -->
+        <text x="500" y="22" text-anchor="middle" class="lbl-sec">JALUR AIR — MEKANIS</text>
+
+        <!-- return line -->
+        <path d="M 910 120 Q 500 40 110 120" fill="none" class="strokeWater" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arrowWater)" opacity="0.8"></path>
+        <text x="500" y="34" text-anchor="middle" class="lbl-sm fillMuted">isi ulang (manual / pompa balik)</text>
+
+        <!-- tangki sumber -->
+        <rect x="50" y="120" width="120" height="110" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <path d="M 58 138 q 8 -8 16 0 q 8 8 16 0 q 8 -8 16 0 q 8 8 16 0 q 8 -8 16 0" fill="none" class="strokeWater" stroke-width="1.5"></path>
+        <text x="110" y="250" text-anchor="middle" class="lbl">Tangki Sumber</text>
+
+        <!-- main pipe -->
+        <polygon points="170,168 500,168 620,180 870,180 870,200 620,200 500,212 170,212" class="strokeInk fillWaterTint" stroke-width="2"></polygon>
+
+        <!-- pompa -->
+        <circle cx="250" cy="190" r="26" class="strokeInk fillPaper2" stroke-width="2"></circle>
+        <line x1="250" y1="172" x2="250" y2="208" class="strokeMuted" stroke-width="1.5"></line>
+        <line x1="232" y1="190" x2="268" y2="190" class="strokeMuted" stroke-width="1.5"></line>
+        <line x1="238" y1="176" x2="262" y2="204" class="strokeMuted" stroke-width="1.5"></line>
+        <line x1="262" y1="176" x2="238" y2="204" class="strokeMuted" stroke-width="1.5"></line>
+        <text x="250" y="232" text-anchor="middle" class="lbl">Pompa 12V</text>
+        <circle cx="250" cy="246" r="4" class="fillOutput"></circle>
+        <line x1="250" y1="250" x2="250" y2="260" class="strokeOutput" stroke-width="1.5"></line>
+        <text x="250" y="274" text-anchor="middle" class="lbl-sm fillOutput">isi-ulang ← PWM (Fitur #1)</text>
+
+        <!-- sensor 1 -->
+        <rect x="365" y="158" width="40" height="20" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="385" y="232" text-anchor="middle" class="lbl">Sensor 1</text>
+        <circle cx="385" cy="246" r="4" class="fillInput"></circle>
+        <line x1="385" y1="250" x2="385" y2="260" class="strokeInput" stroke-width="1.5"></line>
+        <text x="385" y="274" text-anchor="middle" class="lbl-sm fillInput">→ Q1 (pulsa)</text>
+
+        <!-- valve + servo -->
+        <path d="M 610 182 L 620 190 L 610 198 Z M 630 182 L 620 190 L 630 198 Z" class="strokeInk fillPaper2" stroke-width="1.5"></path>
+        <line x1="620" y1="198" x2="620" y2="210" class="strokeInk" stroke-width="2.5"></line>
+        <rect x="595" y="210" width="50" height="36" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="620" y="228" text-anchor="middle" class="lbl-box">Servo</text>
+        <text x="620" y="242" text-anchor="middle" class="lbl-sm fillMuted">(bukaan valve)</text>
+        <circle cx="620" cy="254" r="4" class="fillOutput"></circle>
+        <line x1="620" y1="258" x2="620" y2="268" class="strokeOutput" stroke-width="1.5"></line>
+        <text x="620" y="282" text-anchor="middle" class="lbl-sm fillOutput">← sudut (Fitur #2)</text>
+
+        <!-- sensor 2 -->
+        <rect x="725" y="170" width="40" height="20" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="745" y="220" text-anchor="middle" class="lbl">Sensor 2</text>
+        <circle cx="745" cy="234" r="4" class="fillInput"></circle>
+        <line x1="745" y1="238" x2="745" y2="248" class="strokeInput" stroke-width="1.5"></line>
+        <text x="745" y="262" text-anchor="middle" class="lbl-sm fillInput">→ Q2 (pulsa)</text>
+
+        <!-- tangki penampung -->
+        <rect x="850" y="120" width="120" height="110" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <path d="M 858 138 q 8 -8 16 0 q 8 8 16 0 q 8 -8 16 0 q 8 8 16 0 q 8 -8 16 0" fill="none" class="strokeWater" stroke-width="1.5"></path>
+        <text x="910" y="250" text-anchor="middle" class="lbl">Tangki Penampung</text>
+
+        <!-- ===================== DIVIDER ===================== -->
+        <line x1="40" y1="345" x2="960" y2="345" class="strokeMuted" stroke-width="1" stroke-dasharray="3 4"></line>
+        <text x="500" y="335" text-anchor="middle" class="lbl-sec">KONTROL ELEKTRONIK — HUB MCU</text>
+
+        <!-- ===================== ZONE 2 : KONTROL ===================== -->
+
+        <!-- MCU -->
+        <rect x="400" y="470" width="200" height="80" class="strokeInk fillPaper2" stroke-width="2.5"></rect>
+        <text x="500" y="503" text-anchor="middle" class="lbl-box">MCU</text>
+        <text x="500" y="521" text-anchor="middle" class="lbl-sm fillMuted">(Arduino Uno / kompatibel)</text>
+
+        <!-- input: potensio -->
+        <rect x="100" y="460" width="160" height="36" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="180" y="482" text-anchor="middle" class="lbl">Potensio / Tombol</text>
+        <line x1="260" y1="478" x2="396" y2="478" class="strokeInput" stroke-width="2" marker-end="url(#arrowInput)"></line>
+        <text x="330" y="470" text-anchor="middle" class="lbl-sm fillInput">set target ketinggian</text>
+
+        <!-- input: sensor ultrasonik (Fitur #4) -->
+        <line x1="150" y1="497" x2="396" y2="497" class="strokeInput" stroke-width="2" marker-end="url(#arrowInput)"></line>
+        <text x="275" y="489" text-anchor="middle" class="lbl-sm fillInput">h (tinggi) ← HC-SR04</text>
+
+        <!-- input: sensor 1 -->
+        <line x1="150" y1="516" x2="396" y2="516" class="strokeInput" stroke-width="2" marker-end="url(#arrowInput)"></line>
+        <text x="275" y="508" text-anchor="middle" class="lbl-sm fillInput">Q1 (pulsa) ← Sensor 1</text>
+
+        <!-- input: sensor 2 -->
+        <line x1="150" y1="535" x2="396" y2="535" class="strokeInput" stroke-width="2" marker-end="url(#arrowInput)"></line>
+        <text x="275" y="527" text-anchor="middle" class="lbl-sm fillInput">Q2 (pulsa) ← Sensor 2</text>
+
+        <!-- output: pompa -->
+        <line x1="604" y1="490" x2="850" y2="490" class="strokeOutput" stroke-width="2" marker-end="url(#arrowOutput)"></line>
+        <text x="725" y="482" text-anchor="middle" class="lbl-sm fillOutput">PWM → MOSFET → Pompa (isi-ulang)</text>
+
+        <!-- output: servo -->
+        <line x1="604" y1="520" x2="850" y2="520" class="strokeOutput" stroke-width="2" marker-end="url(#arrowOutput)"></line>
+        <text x="725" y="512" text-anchor="middle" class="lbl-sm fillOutput">sudut servo → Servo/Valve</text>
+
+        <!-- output: LCD -->
+        <line x1="430" y1="550" x2="255" y2="597" class="strokeOutput" stroke-width="2" marker-end="url(#arrowOutput)"></line>
+        <rect x="140" y="600" width="210" height="60" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="245" y="626" text-anchor="middle" class="lbl-box">LCD</text>
+        <text x="245" y="644" text-anchor="middle" class="lbl-sm fillMuted">Q1,Q2,v1,v2,ΔP + mode tantangan</text>
+
+        <!-- output: buzzer -->
+        <line x1="500" y1="550" x2="500" y2="597" class="strokeOutput" stroke-width="2" marker-end="url(#arrowOutput)"></line>
+        <rect x="420" y="600" width="160" height="60" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="500" y="626" text-anchor="middle" class="lbl-box">Buzzer</text>
+        <text x="500" y="644" text-anchor="middle" class="lbl-sm fillMuted">nada ∝ debit (Fitur #3)</text>
+
+        <!-- output: LED -->
+        <line x1="570" y1="550" x2="753" y2="597" class="strokeOutput" stroke-width="2" marker-end="url(#arrowOutput)"></line>
+        <rect x="650" y="600" width="210" height="60" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="755" y="626" text-anchor="middle" class="lbl-box">LED indikator</text>
+        <text x="755" y="644" text-anchor="middle" class="lbl-sm fillMuted">status target (Fitur #3)</text>
+
+      </svg>
+    </div>
+    <figcaption>Hubungan sinyal (bukan bentuk fisik nyata — lihat diagram tampak samping di bawah untuk itu): air mengalir dari tangki sumber, melewati sensor 1, penyempitan venturi dengan katup servo, sensor 2, ke tangki penampung. Pompa kini berperan isi-ulang ketinggian tangki sumber (bukan mendorong aliran langsung). MCU jadi hub — menerima bacaan sensor ketinggian & flow serta input pengguna, lalu mengeluarkan perintah ke aktuator dan tampilan.</figcaption>
+  </figure>
+
+  <h2 class="diagram-heading">2. Tampak Samping — Tata Letak Fisik</h2>
+  <figure>
+    <div class="diagram-frame">
+      <svg viewBox="0 0 900 740" role="img" aria-label="Tampak samping alat: tangki sumber diposisikan elevated di atas rak dengan tanda ketinggian 7, 14, dan 21 cm serta sensor ultrasonik di atasnya, air mengalir turun karena gravitasi melalui pipa yang berkelok turun lalu mendatar melewati sensor 1, penyempitan venturi dengan servo-valve, sensor 2, kemudian turun lagi ke tangki penampung di level meja. Pompa di dalam tangki penampung mengalirkan air kembali naik melalui selang balik ke atas tangki sumber untuk isi ulang.">
+        <defs>
+          <marker id="arrowInput2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="fillInput"></path>
+          </marker>
+          <marker id="arrowWater2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="fillWater"></path>
+          </marker>
+        </defs>
+        <style>
+          text { font-family: 'IBM Plex Sans', sans-serif; fill: var(--ink); }
+          .strokeInk { stroke: var(--ink); }
+          .fillInk { fill: var(--ink); }
+          .fillPaper2 { fill: var(--paper-2); }
+          .strokeWater { stroke: var(--water); }
+          .fillWater { fill: var(--water); }
+          .fillWaterTint { fill: var(--water-fill); }
+          .strokeInput { stroke: var(--input); }
+          .fillInput { fill: var(--input); }
+          .strokeOutput { stroke: var(--output); }
+          .fillOutput { fill: var(--output); }
+          .strokeMuted { stroke: var(--muted); }
+          .fillMuted { fill: var(--muted); }
+          .lbl { font-size: 13px; }
+          .lbl-sm { font-size: 11px; }
+          .lbl-box { font-size: 13px; font-weight: 600; }
+        </style>
+
+        <!-- ground line -->
+        <line x1="20" y1="610" x2="860" y2="610" class="strokeMuted" stroke-width="1.5"></line>
+        <line x1="30" y1="618" x2="45" y2="610" class="strokeMuted" stroke-width="1"></line>
+        <line x1="60" y1="618" x2="75" y2="610" class="strokeMuted" stroke-width="1"></line>
+        <line x1="90" y1="618" x2="105" y2="610" class="strokeMuted" stroke-width="1"></line>
+        <text x="30" y="632" class="lbl-sm fillMuted">meja / lantai kerja</text>
+
+        <!-- tower -->
+        <line x1="85" y1="610" x2="85" y2="180" class="strokeInk" stroke-width="3"></line>
+        <line x1="205" y1="610" x2="205" y2="180" class="strokeInk" stroke-width="3"></line>
+        <line x1="85" y1="440" x2="205" y2="440" class="strokeInk" stroke-width="2"></line>
+        <rect x="55" y="170" width="170" height="10" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="140" y="20" text-anchor="middle" class="lbl-box">Tangki Sumber (elevated di rak)</text>
+
+        <!-- ultrasonic sensor (Fitur #4) -->
+        <rect x="130" y="28" width="20" height="10" class="strokeInk fillPaper2" stroke-width="1.5"></rect>
+        <circle cx="135" cy="38" r="3" class="fillMuted"></circle>
+        <circle cx="145" cy="38" r="3" class="fillMuted"></circle>
+        <text x="200" y="35" class="lbl-sm fillInput">HC-SR04 (Fitur #4)</text>
+        <line x1="140" y1="41" x2="140" y2="105" class="strokeInput" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#arrowInput2)"></line>
+        <text x="200" y="112" class="lbl-sm fillInput">ukur h → P=ρgh</text>
+
+        <!-- tangki sumber body + level marks -->
+        <rect x="60" y="70" width="160" height="100" class="strokeInk fillWaterTint" stroke-width="2"></rect>
+        <line x1="65" y1="95" x2="215" y2="95" class="strokeMuted" stroke-width="1" stroke-dasharray="2 3"></line>
+        <text x="228" y="99" class="lbl-sm fillMuted">21 cm</text>
+        <line x1="65" y1="120" x2="215" y2="120" class="strokeMuted" stroke-width="1" stroke-dasharray="2 3"></line>
+        <text x="228" y="124" class="lbl-sm fillMuted">14 cm</text>
+        <line x1="65" y1="145" x2="215" y2="145" class="strokeMuted" stroke-width="1" stroke-dasharray="2 3"></line>
+        <text x="228" y="149" class="lbl-sm fillMuted">7 cm</text>
+
+        <!-- vertical drop pipe -->
+        <rect x="132" y="170" width="16" height="250" class="strokeInk fillWaterTint" stroke-width="2"></rect>
+
+        <!-- horizontal instrument run -->
+        <polygon points="140,412 340,412 420,416 650,416 650,424 420,424 340,428 140,428" class="strokeInk fillWaterTint" stroke-width="2"></polygon>
+
+        <!-- sensor 1 -->
+        <rect x="225" y="402" width="30" height="12" class="strokeInk fillPaper2" stroke-width="1.5"></rect>
+        <text x="240" y="448" text-anchor="middle" class="lbl">Sensor 1</text>
+
+        <!-- venturi + servo valve (Fitur #2) -->
+        <path d="M 410 414 L 420 420 L 410 426 Z M 430 414 L 420 420 L 430 426 Z" class="strokeInk fillPaper2" stroke-width="1"></path>
+        <line x1="420" y1="426" x2="420" y2="432" class="strokeInk" stroke-width="2"></line>
+        <rect x="400" y="432" width="40" height="22" class="strokeInk fillPaper2" stroke-width="1.5"></rect>
+        <text x="420" y="447" text-anchor="middle" class="lbl-sm">Servo</text>
+        <text x="420" y="468" text-anchor="middle" class="lbl-sm fillOutput">(Fitur #2)</text>
+
+        <!-- sensor 2 -->
+        <rect x="505" y="408" width="30" height="12" class="strokeInk fillPaper2" stroke-width="1.5"></rect>
+        <text x="520" y="444" text-anchor="middle" class="lbl">Sensor 2</text>
+
+        <!-- final drop into tangki penampung -->
+        <rect x="642" y="424" width="16" height="46" class="strokeInk fillWaterTint" stroke-width="2"></rect>
+
+        <!-- tangki penampung -->
+        <rect x="620" y="470" width="160" height="140" class="strokeInk fillWaterTint" stroke-width="2"></rect>
+        <text x="700" y="460" text-anchor="middle" class="lbl-box">Tangki Penampung</text>
+        <circle cx="700" cy="580" r="16" class="strokeInk fillPaper2" stroke-width="2"></circle>
+        <line x1="700" y1="568" x2="700" y2="592" class="strokeMuted" stroke-width="1.2"></line>
+        <line x1="688" y1="580" x2="712" y2="580" class="strokeMuted" stroke-width="1.2"></line>
+        <text x="700" y="605" text-anchor="middle" class="lbl-sm fillMuted">Pompa</text>
+
+        <!-- return hose (Fitur #1: isi-ulang) -->
+        <path d="M 700 564 L 700 55 L 210 55 L 210 70" fill="none" class="strokeWater" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowWater2)"></path>
+        <text x="460" y="47" text-anchor="middle" class="lbl-sm fillOutput">isi-ulang ← PWM (Fitur #1)</text>
+
+        <!-- control box -->
+        <rect x="330" y="650" width="140" height="46" class="strokeInk fillPaper2" stroke-width="2"></rect>
+        <text x="400" y="670" text-anchor="middle" class="lbl">Box Kontrol (MCU)</text>
+        <text x="400" y="686" text-anchor="middle" class="lbl-sm fillMuted">wiring: lihat diagram 1</text>
+      </svg>
+    </div>
+    <figcaption>Tata letak fisik (bukan skala sebenarnya): Tangki Sumber ditinggikan di rak dengan tanda ketinggian acuan 7/14/21 cm dan sensor ultrasonik di atasnya. Air turun karena gravitasi lewat pipa yang berkelok — turun, mendatar melalui kedua sensor dan venturi, lalu turun lagi — ke Tangki Penampung di level meja. Pompa di dalamnya memompa balik lewat selang yang naik di sisi kanan untuk mengisi ulang Tangki Sumber.</figcaption>
+  </figure>
+
+  <div class="legend">
+    <div class="item"><span class="swatch" style="background:var(--water-fill); border:1.5px solid var(--water);"></span>Jalur air utama (gravitasi, terinstrumentasi)</div>
+    <div class="item"><span class="swatch" style="background:var(--water-fill); border:1.5px dashed var(--water);"></span>Selang isi-ulang (pompa balik, Fitur #1)</div>
+    <div class="item"><span class="swatch" style="background:var(--input);"></span>Sinyal masuk ke MCU (sensor, input user)</div>
+    <div class="item"><span class="swatch" style="background:var(--output);"></span>Sinyal keluar dari MCU (aktuator, tampilan)</div>
+  </div>
+
+  <section class="notes">
+    <h2>Empat lapis fitur</h2>
+    <div class="fitur-grid">
+      <div class="fitur-card output-tag">
+        <div class="tag">Fitur #1 — kontrol fisik</div>
+        <h3>Isi-ulang ketinggian via PWM</h3>
+        <p>User atur target ketinggian (potensio/tombol) → pompa mengisi Tangki Sumber dari Tangki Penampung → berhenti otomatis saat target tercapai (feedback dari Fitur #4).</p>
+      </div>
+      <div class="fitur-card output-tag">
+        <div class="tag">Fitur #2 — kontrol fisik</div>
+        <h3>Bukaan valve via servo</h3>
+        <p>Servo memutar tuas valve di titik penyempitan → mengubah luas penampang efektif (A), independen dari ketinggian tangki sumber.</p>
+      </div>
+      <div class="fitur-card input-tag">
+        <div class="tag">Fitur #4 — ukur fisika</div>
+        <h3>Ketinggian → tekanan hidrostatis</h3>
+        <p>Sensor ultrasonik ukur ketinggian air di Tangki Sumber → hitung P=ρgh real-time (ala Mulianti dkk.) → dibandingkan dengan ΔP dari Bernoulli.</p>
+      </div>
+      <div class="fitur-card output-tag">
+        <div class="tag">Fitur #3 — presentasi</div>
+        <h3>Sonifikasi & mode tantangan</h3>
+        <p>Buzzer bernada mengikuti debit, LED status target, LCD kasih target debit untuk dicapai user — gamifikasi ringan, murni software.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Status: <strong>sketsa kasar</strong>, belum final — 6 pertanyaan ke client (fokus skripsi, data Bab IV, variasi percobaan, toleransi error, ukuran fisik, deadline) masih menggantung, plus konfirmasi apakah reframing pompa jadi "isi-ulang" (bukan kontrol debit real-time) bisa diterima. Acuan lengkap: <code>catatan/konteks-dan-spesifikasi.md</code>. *NTS = Not To Scale, konvensi gambar teknik.
+  </footer>
+
+</div>
