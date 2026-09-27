@@ -24,16 +24,20 @@ Freelance job: membuat **alat praktikum fluida dinamis berbasis mikrokontroler**
 
 ### 4.1 Inti pengukuran
 - **2 sensor flow** (hall-effect) mengukur debit: S1 di pipa **besar** (A₁), S2 di pipa **kecil** setelah reducer (A₂).
-- **Panel manometer 6 tabung** membaca tekanan statis **langsung** di 6 titik sepanjang venturi — ini sumber data tekanan utama (lihat Fitur #5).
-- **Sensor ultrasonik** mengukur ketinggian air di Tangki Sumber → P=ρgh sebagai *driving head*.
+- **Panel manometer 6 tabung** membaca tekanan statis **langsung** di 6 titik sepanjang test section — ini sumber data tekanan utama (lihat Fitur #5).
+- **Debit diukur dua jalur independen**: langsung dari S1, dan tidak langsung dari selisih kolom manometer lebar ↔ sempit (prinsip venturimeter: v₁ = √(2gΔh / ((A₁/A₂)² − 1))). Kecocokan keduanya = bukti kontinuitas + Bernoulli.
 - Mikrokontroler (Arduino Uno atau setara; nama repo sengaja platform-agnostic `mcu-*`) baca pulsa sensor → hitung debit, volume, kecepatan, lalu dibandingkan dengan pembacaan manometer.
 - LCD (16x2 atau 20x4 I2C) untuk tampilkan hasil.
 
-### 4.2 Arsitektur fisik — gravity-fed, bentuk hybrid benchtop
-- **Tangki Sumber** akrilik berskala (acuan 7/14/21 cm) duduk di **rak pendek yang menyatu dengan bodi** — bukan tower tinggi terpisah. Alat tetap terbaca sebagai satu unit di atas meja (± 95 × 30 × 65 cm).
-- Aliran: Tangki Sumber → pipa besar + **S1** → **test section venturi akrilik** (6 titik sadap) → **reducer** → pipa kecil + **S2** → katup servo → Tangki Penampung.
-- Air mengalir **turun karena gravitasi**; pompa di Tangki Penampung mengembalikan air ke Tangki Sumber (sirkulasi tertutup).
-- **Penting**: S1 dan S2 wajib di penampang yang benar-benar berbeda (A₁ ≠ A₂). Sketsa versi pertama keliru menaruh keduanya di pipa berukuran sama — sudah dikoreksi di Rev. 02 gambar dengan menambahkan reducer sebelum S2.
+### 4.2 Arsitektur fisik — satu tangki, pompa langsung (Rev. 07, FINAL)
+- **Satu tangki** akrilik duduk di pelat dasar alat. Tidak ada rak tinggi, tidak ada tangki kedua.
+- **Pompa celup DC** di dalam tangki mendorong air **langsung** ke test section; debit diatur PWM. Air kembali ke tangki yang sama lewat pipa belakang (sirkuit tertutup).
+- Aliran: Tangki → pompa → pipa besar + **S1** → **zona A** venturi mendatar → **zona B** segmen naik (Δh ≈ 12 cm, penampang tetap) → **zona C** reducer di atas + **S2** → kran pembuang udara → **katup hilir servo** → kembali ke tangki.
+- Energi aliran berasal dari pompa ("tinggi setara"/head pompa), bukan dari tinggi air tangki. Secara fisika setara: pada Q yang sama, bacaan manometer identik dengan versi tangki tinggi. Selisih kolom hanya bergantung pada Q dan ukuran pipa.
+- **Penting**: S1 dan S2 wajib di penampang yang benar-benar berbeda (A₁ ≠ A₂). Sketsa versi pertama keliru menaruh keduanya di pipa berukuran sama — sudah dikoreksi dengan reducer sebelum S2.
+- Sketsa acuan: artifact "Rancangan Alat Bernoulli" Rev. 07.
+
+*Arsitektur lama gravity-fed (tangki sumber di rak + tangki penampung, Rev. 03–06) dibatalkan — lihat §7.*
 
 ### 4.3 Fitur interaktif
 Prinsip yang disepakati client:
@@ -42,26 +46,21 @@ Prinsip yang disepakati client:
 
 *(Interpretasi awal Predict-Observe-Explain sudah digantikan prinsip ini. Elemen "prediksi dulu baru lihat hasil" masih bisa dihidupkan di dalam mode tantangan, tapi bukan konsep utamanya.)*
 
-#### Fitur #1 — Kontrol pompa via PWM (tiga mode)
-| Mode | Yang terjadi | Kegunaan |
-|---|---|---|
-| **Isi** | Pompa kencang sampai ketinggian target tercapai, lalu berhenti | Menyiapkan kondisi awal (7/14/21 cm) |
-| **Tahan** | Pompa mengisi persis sebanyak yang keluar → ketinggian konstan | Data tunak & bisa diulang ← paling bernilai |
-| **Mati** | Ketinggian turun bebas saat air mengalir keluar | Replikasi metode jurnal Mulianti |
-
-Mode **Tahan** memecahkan masalah nyata sistem gravity-fed: begitu katup dibuka, ketinggian turun → tekanan turun → debit ikut turun, jadi semua bacaan bergerak terus selama pengukuran. Ini versi elektronik dari *constant head tank* yang dipakai lab hidrolika sungguhan.
+#### Fitur #1 — Kontrol debit via PWM pompa
+- Kenop pompa → PWM → **debit Q**. Q menentukan semua kecepatan, dan karenanya **selisih** antar kolom manometer (Δh ∝ Q²).
+- Mode Isi/Tahan/Mati dari desain gravity-fed **dihapus** — tidak relevan lagi.
+- **Mode Q-konstan (opsional)**: firmware menahan debit target (kontrol proporsional/PID dari S1) walau katup diputar, sehingga siswa bisa mengubah satu variabel saja.
 
 Syarat teknis:
-- **Kapasitas pompa harus melebihi laju keluar maksimum** — pilih ~800 L/jam, bukan 240 L/jam. Kalau kurang, ketinggian tidak bisa ditahan saat katup dibuka lebar.
+- **Pompa celup DC 12 V** yang bisa di-PWM + driver MOSFET. Pompa AC 800 L/jam dari rancangan lama tidak bisa diatur halus.
 - **PWM di bawah ~30–40% biasanya tidak memutar pompa** (stall). Rentang efektif harus dites & dicatat saat kalibrasi.
-- **Air masuk mengaduk permukaan** → bacaan ultrasonik berisik. Arahkan saluran masuk ke dinding tangki atau beri peredam, dan rata-ratakan beberapa sampel.
-- **Kontrol harus halus** (proporsional sederhana sudah cukup) supaya ketinggian tidak berosilasi naik-turun.
+- **Denyut pompa** bisa membuat kolom manometer bergetar → pasang peredam (restriktor kecil) di selang tiap tabung.
+- Operasi praktikum yang disarankan: **± 4–6 L/min** (di bawah itu selisih kolom venturi hanya beberapa mm, sulit dibaca).
 
-**Pompa kedua TIDAK diperlukan** — ini membatalkan catatan lama. Kontrol debit langsung sudah dipegang katup servo. Pembagian tugasnya bersih: pompa mengatur tekanan pendorong (lewat ketinggian), katup servo mengatur hambatan aliran (debit) — dua variabel independen.
-
-#### Fitur #2 — Kontrol bukaan valve via servo
-- Servo memutar tuas katup dari mikrokontroler → mengubah hambatan aliran, dan karenanya debit serta distribusi tekanan.
-- Umpan balik visualnya kuat: putar knob, keenam kolom air di manometer langsung bergerak saat itu juga.
+#### Fitur #2 — Katup hilir via servo
+- Servo memutar katup di **ujung hilir** test section. Fungsinya mengatur **letak** (level) semua kolom manometer: menutup katup → semua kolom naik bersama, pola/selisihnya tetap. Juga ikut menurunkan Q kalau pompa tidak dikompensasi (lihat mode Q-konstan).
+- Pembagian tugas: **kenop pompa = selisih kolom (kecepatan)**, **kenop katup = level kolom (tekanan sistem)**.
+- **Risiko meluap**: katup terlalu tertutup / pompa terlalu kencang → kolom melewati tinggi tabung. Firmware wajib membatasi kombinasi PWM–sudut katup; tinggi tabung final menunggu hitungan dimensi ulang (kemungkinan ± 500 mm, atau manifold udara di atas tabung seperti alat komersial).
 - Pertimbangan servo: SG90 (~Rp15rb) kemungkinan kurang torsi melawan tekanan air — siapkan opsi MG995/MG996R (~Rp45–60rb). Perlu dites saat perakitan.
 - Perlu kalibrasi hubungan sudut servo ↔ bukaan aktual ↔ debit yang dihasilkan.
 
@@ -70,10 +69,19 @@ Syarat teknis:
 - **Sonifikasi** — pitch buzzer mengikuti debit real-time; fisika jadi terdengar, bukan cuma terbaca.
 - **Mode tantangan** — sekarang bisa memakai target fisik yang terlihat, mis. *"atur pompa & katup sampai selisih tinggi kolom manometer 1 dan 3 mencapai X mm"*. Jauh lebih konkret daripada target angka di LCD.
 
-#### Fitur #4 — Ketinggian tangki sumber (driving head)
-- Sensor ultrasonik (HC-SR04) di atas Tangki Sumber mengukur ketinggian air → P=ρgh real-time, mengikuti metode jurnal **Mulianti dkk.**
-- **Perannya**: variabel **input** yang menentukan seberapa deras aliran — ini tekanan di *sumber*, bukan tekanan di test section (yang diukur manometer).
-- Divariasikan antar percobaan (acuan 7/14/21 cm), diisi & ditahan otomatis lewat Fitur #1.
+#### Fitur #4 — Demo hidrostatis P = ρgh (terpisah, opsional)
+Dengan pompa langsung, tinggi air tangki **tidak lagi menggerakkan aliran**. P = ρgh tetap muncul di tiga tingkat:
+
+| "h" yang mana | Artinya | Di alat |
+|---|---|---|
+| Tinggi kolom manometer | Cara **membaca** tekanan | Setiap tabung (memakai, bukan membuktikan) |
+| Ketinggian pipa | Suku **ρgh di Bernoulli** | Zona B, kolom 3 ↔ 5 |
+| Kedalaman air | **Hidrostatis** | Demo terpisah ini |
+
+- Membuktikan P = ρgh (bukan sekadar memakainya) butuh tekanan yang diukur **dengan cara lain** lalu dibandingkan dengan ρgh — kalau hanya pakai manometer, argumennya sirkular.
+- Opsi A: sensor tekanan analog (0–10 kPa) di dasar tangki + HC-SR04 di tutup; pompa mati, tangki diisi/dikuras bertahap → grafik P vs h lurus (metode Mulianti dkk.).
+- Opsi B (disarankan kalau hidrostatis masuk materi): **probe kedalaman** — corong bermembran dicelup di kedalaman 5/10/15 cm, disambung manometer U (+ sensor tekanan opsional). Siswa mengubah kedalaman, Δh ≈ d.
+- Kalau skripsi hanya kontinuitas & Bernoulli, fitur ini bisa dibuang untuk hemat budget (suku ρgh Bernoulli sudah terbukti di zona B). **Menunggu jawaban client** (§6).
 
 #### Fitur #5 — Panel manometer 6 tabung (BARU)
 Mengikuti alat peraga Bernoulli standar lab teknik (referensi foto dari client).
@@ -89,12 +97,13 @@ Mengikuti alat peraga Bernoulli standar lab teknik (referensi foto dari client).
 |---|---|---|
 | Modul MOSFET logic-level (mis. IRLZ44N) | Jembatan sinyal PWM → daya pompa | #1 |
 | Dioda flyback (1N4007) | Proteksi induksi balik dari pompa | #1 |
-| Potensiometer / tombol | Set target ketinggian (input user) | #1 |
-| Pompa ~800 L/jam | Kapasitas cukup untuk mode Tahan | #1 |
-| Servo motor (SG90 / MG995 / MG996R) | Putar tuas katup | #2 |
+| 2 potensiometer / kenop | Input user: debit (pompa) & level (katup) | #1, #2 |
+| Pompa celup DC 12 V (bisa PWM) | Mendorong aliran langsung | #1 |
+| Servo motor (SG90 / MG995 / MG996R) | Putar tuas katup hilir | #2 |
 | Bracket servo ke katup | Penghubung mekanik (cetak 3D / akrilik) | #2 |
-| Sensor ultrasonik (HC-SR04) | Ukur ketinggian air Tangki Sumber | #4 |
-| Rak pendek penyangga tangki | Struktur elevasi, menyatu dengan bodi | #4 |
+| Sensor tekanan analog 0–10 kPa + HC-SR04 | Demo P = ρgh (opsi A), opsional | #4 |
+| Corong + membran + manometer U | Probe kedalaman (opsi B), opsional | #4 |
+| Restriktor/peredam kecil per selang | Redam getaran kolom akibat denyut pompa | #5 |
 | 6 tabung bening Ø6–8 mm + papan berskala | Panel manometer | #5 |
 | 6 nipple kuningan + selang bening | Titik sadap tekanan → tabung | #5 |
 | Reducer pipa besar → kecil | Bikin A₂ ≠ A₁ supaya S2 bermakna | inti |
@@ -106,10 +115,12 @@ Gampang terlewat saat fabrikasi, tapi bisa membatalkan validitas seluruh data:
 2. **Lubang sadap harus tegak lurus dinding dan bebas duri.** Lubang miring/berduri bikin yang terbaca bukan tekanan statis murni — seluruh data Bernoulli ikut meleset. Ini bagian paling menuntut ketelitian saat perakitan.
 3. **Q₁ = Q₂ itu "otomatis benar"** (kekekalan massa, aliran tunggal tanpa cabang). Selisihnya hanya menunjukkan error kalibrasi atau kebocoran — bukan pembuktian fisika. Yang membuktikan kontinuitas adalah **kecepatan berbeda di penampang berbeda** (v = Q/A).
 4. **Pembuktian yang tidak sirkular** butuh dua jalur independen: (a) v dari sensor debit (Q/A), dan (b) v yang diturunkan dari beda tekanan manometer lewat persamaan Bernoulli. Kalau keduanya cocok, barulah kontinuitas & Bernoulli terbukti secara eksperimental.
-5. **Keterbatasan wajar**: test section horizontal, jadi suku ρgh praktis nol di sepanjang pipa uji (sama seperti alat komersial). Pengaruh ketinggian datang dari variasi tangki sumber, bukan dari test section.
+5. **Suku ρgh Bernoulli** dibuktikan di zona B (pipa naik, penampang tetap): kolom 3, 4, 5 harus sama tinggi pada penggaris bersama. Untuk mengubah bacaan jadi tekanan (Pa), kurangi dulu dengan ketinggian titik sadap; untuk membandingkan energi antar titik, pakai angka penggaris langsung (tinggi piezometrik).
 6. **Kalibrasi sensor flow wajib** — konstanta pulsa/liter pabrikan biasanya meleset; validasi dengan gelas ukur + stopwatch, minimal 5 pengulangan (mengikuti metode jurnal referensi).
 
 ## 5. Estimasi Biaya (Berjalan)
+
+> ⚠️ **Tabel di bawah belum diperbarui ke Rev. 07.** Perubahan yang perlu dihitung ulang: rak & tangki kedua hilang (hemat), pompa AC 800 L/jam diganti pompa DC PWM, fee #1 & #4 berubah isi, tabung manometer mungkin lebih tinggi. Estimasi budget terbaru (Rp3,0–5,4 jt untuk desain tiga zona) ada di artifact estimasi budget, juga belum disesuaikan.
 
 | Pos | Estimasi |
 |---|---|
@@ -141,9 +152,9 @@ Gampang terlewat saat fabrikasi, tapi bisa membatalkan validitas seluruh data:
 2. Jumlah titik sadap manometer: **6** (seperti gambar, terlihat profesional) atau **4** (lebih murah, lebih kecil risiko bocor)?
 
 **Untuk kunci desain final & kalibrasi:**
-3. Judul/topik skripsi persisnya apa (kontinuitas, Bernoulli, atau dua-duanya setara)?
+3. Judul/topik skripsi persisnya apa (kontinuitas, Bernoulli, atau dua-duanya setara)? **Apakah hidrostatis (P = ρgh) ikut masuk materi?** Menentukan apakah Fitur #4 dipertahankan, dan opsi A atau B.
 4. Data seperti apa yang dibutuhkan untuk Bab IV (tabel apa saja)?
-5. Berapa banyak variasi ketinggian & bukaan katup yang direncanakan untuk pengambilan data?
+5. Berapa banyak variasi debit & bukaan katup yang direncanakan untuk pengambilan data?
 6. Ada ekspektasi toleransi error dari dosen pembimbing (mis. <10% seperti di jurnal referensi)?
 7. Ada batasan ukuran fisik alat (rancangan sekarang ± 95 × 30 × 65 cm — muat di lab/meja yang dituju)?
 8. Deadline pasti (tanggal target selesai / rencana sidang)?
@@ -161,3 +172,5 @@ Gampang terlewat saat fabrikasi, tapi bisa membatalkan validitas seluruh data:
 - **Koreksi desain penting**: sketsa versi pertama menaruh S1 dan S2 di penampang berukuran sama (venturi melebar kembali), sehingga v₁ = v₂ dan tidak membuktikan apa-apa. Diperbaiki di Rev. 02 dengan menambah reducer sebelum S2.
 - **Peran pompa diperjelas**: tiga mode (Isi / Tahan / Mati). Mode Tahan = constant head tank elektronik, bikin data tunak & bisa diulang. Rencana "pompa kedua" dibatalkan — tidak diperlukan.
 - Bentuk fisik final: **hybrid benchtop** (tangki di rak pendek menyatu dengan bodi), gaya lab kit putih–biru PVC–kuningan, ± 95 × 30 × 65 cm. Sketsa tampak depan sudah dibuat (Rev. 02).
+- Test section berkembang jadi **tiga zona** (A venturi mendatar, B segmen naik, C reducer di atas) — Rev. 06.
+- **2026-09-27 — Arsitektur dibalik ke POMPA LANGSUNG, satu tangki (Rev. 07, keputusan final).** Alasan: pada gravity-fed, tinggi tangki dan katup saling mengunci (tinggi = atap energi, katup wajib selalu menutup sebagian karena bukaan penuh melampaui range S2), sulit dijelaskan ke siswa dan butuh rak + tangki kedua + logika Isi/Tahan/Mati. Dengan pompa: kenop pompa = debit/selisih kolom, kenop katup = level kolom — langsung dan mudah dipahami. Secara fisika setara (pompa = "tangki virtual" dengan head yang bisa diatur). Konsekuensi: P = ρgh hidrostatis tidak lagi jadi penggerak aliran → dipindah jadi demo terpisah opsional (Fitur #4); pompa diganti DC PWM; perlu hitung ulang dimensi, tinggi tabung manometer, dan budget.

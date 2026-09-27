@@ -9,7 +9,7 @@ Freelance job: merancang dan membangun alat praktikum fisika berbasis mikrokontr
 Alat ini punya tiga lapis:
 
 1. **Pengukuran inti** — dua sensor flow (debit) di penampang berbeda, dan panel manometer 6 tabung yang membaca tekanan **langsung** (bukan dihitung) di sepanjang test section tiga-zona (venturi mendatar → segmen naik → penyempitan di ketinggian lain).
-2. **Kontrol fisik** — servo mengatur bukaan katup (luas penampang efektif), pompa dengan tiga mode (Isi/Tahan/Mati) mengatur ketinggian tangki sumber (tekanan hidrostatis). Keduanya independen: debit dan luas penampang bisa diatur terpisah.
+2. **Kontrol fisik** — pompa DC di satu tangki mendorong aliran langsung: kenop pompa (PWM) mengatur debit, jadi selisih antar kolom manometer. Katup hilir bermotor servo mengatur level tekanan, jadi semua kolom naik-turun bersama.
 3. **Presentasi** — pewarna air, sonifikasi (nada mengikuti debit), dan mode tantangan target.
 
 Prinsip yang mendasari semua keputusan desain:
@@ -57,11 +57,12 @@ Dua hal ini **wajib selesai sebelum belanja komponen atau mulai fabrikasi**:
 
 Desain berkembang signifikan lewat diskusi, dari alat pasif jadi sistem dengan input-output yang benar-benar terkontrol:
 
-- **Revisi arsitektur besar**: dari "pompa mendorong aliran mendatar" menjadi **gravity-fed** (tangki sumber elevated, air turun karena gravitasi) — supaya ketinggian tangki bisa jadi variabel tekanan hidrostatis (P=ρgh) yang nyata, bukan cuma dekorasi.
+- **Revisi arsitektur besar** (kemudian dibatalkan di Rev. 07): dari "pompa mendorong aliran mendatar" menjadi **gravity-fed** (tangki sumber elevated, air turun karena gravitasi) — supaya ketinggian tangki bisa jadi variabel tekanan hidrostatis (P=ρgh) yang nyata, bukan cuma dekorasi.
 - **Koreksi penting**: sketsa awal sempat menaruh dua sensor flow di penampang berukuran sama (tidak membuktikan apa-apa) — diperbaiki dengan menambah reducer sehingga A₁≠A₂.
 - **Test section berkembang dari 1 jadi 3 zona**: venturi mendatar (isolasi efek kecepatan) → segmen naik (isolasi efek ketinggian) → penyempitan lagi di ketinggian lain (replikasi Bernoulli, sekaligus mengembalikan makna sensor kedua sebagai pembanding kecepatan).
 - **Panel manometer 6 tabung ditambahkan** setelah client membagikan foto alat peraga Bernoulli komersial — mengubah tekanan dari "dihitung" jadi "terukur langsung", peningkatan kredibilitas data terbesar dalam seluruh proses desain.
 - **Peran pompa diperjelas** jadi tiga mode (Isi/Tahan/Mati), dengan mode Tahan berfungsi sebagai *constant head tank* elektronik — rencana "pompa kedua" yang sempat dipertimbangkan akhirnya tidak diperlukan.
+- **Arsitektur dibalik ke pompa langsung, satu tangki (Rev. 07, final)**: pada gravity-fed, tinggi tangki dan katup saling mengunci dan sulit dijelaskan ke siswa. Pompa berperan sebagai "tangki virtual" yang tingginya bisa diatur, setara secara fisika. Rak, tangki kedua, dan mode Isi/Tahan/Mati hilang; P = ρgh hidrostatis jadi demo terpisah opsional.
 
 Detail teknis lengkap, alasan tiap keputusan, dan estimasi biaya per komponen: lihat `catatan/konteks-dan-spesifikasi.md`.
 
