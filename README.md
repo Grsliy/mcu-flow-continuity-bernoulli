@@ -21,6 +21,8 @@ Prinsip yang mendasari semua keputusan desain:
 ```
 ├── README.md                          ← file ini
 ├── referensi/                         ← 4 jurnal acuan (lihat di bawah)
+├── anggaran/
+│   └── RAB-alat-praktikum-rev08.xlsx  ← RAB per kelompok (elektronik, mekanis, jasa, dll) + ringkasan otomatis
 ├── catatan/
 │   └── konteks-dan-spesifikasi.md     ← acuan kerja aktif — scope, desain, biaya, pertanyaan, log keputusan
 ├── desain/
@@ -31,7 +33,7 @@ Prinsip yang mendasari semua keputusan desain:
 └── arsip/                             ← materi usang (draft awal, desain gravity-fed Rev. 06)
 ```
 
-Yang aktif hanya `catatan/` dan `desain/`. Isi `arsip/` disimpan sebagai jejak keputusan saja — lihat `arsip/README.md`.
+Yang aktif hanya `anggaran/`, `catatan/`, dan `desain/`. Isi `arsip/` disimpan sebagai jejak keputusan saja — lihat `arsip/README.md`.
 
 ## Referensi
 

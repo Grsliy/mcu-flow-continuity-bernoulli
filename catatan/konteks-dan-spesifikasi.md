@@ -137,7 +137,9 @@ Gampang terlewat saat fabrikasi, tapi bisa membatalkan validitas seluruh data:
 
 ## 5. Estimasi Biaya (Berjalan)
 
-> ⚠️ **Belum dihitung ulang untuk Rev. 08.** Perubahan sejak tabel lama: rak & tangki kedua hilang, servo dihapus (hemat ± Rp200–400 rb), pompa AC diganti DC PWM, tambahan katup searah + ball valve + leher angsa + venturi cetak 3D + gelas ukur. Target kerja: **paket inti ± Rp2 juta total** (belum dikonfirmasi client). Estimasi Rev. 06 (Rp3,0–5,4 jt) ada di `arsip/gravity-fed/estimasi-budget-rev06.html`.
+> **RAB Rev. 08: `anggaran/RAB-alat-praktikum-rev08.xlsx`** — harga masih perkiraan, kolom harga online shop diisi setelah riset. Perkiraan awal paket inti ± Rp4,1 juta (komponen ± Rp2,25 jt + kontingensi 10% + ongkir/transport + jasa Rp1,5 jt), jauh di atas target Rp2 juta.
+>
+> ⚠️ **Tabel lama di bawah belum dihitung ulang untuk Rev. 08.** Perubahan sejak tabel lama: rak & tangki kedua hilang, servo dihapus (hemat ± Rp200–400 rb), pompa AC diganti DC PWM, tambahan katup searah + ball valve + leher angsa + venturi cetak 3D + gelas ukur. Target kerja: **paket inti ± Rp2 juta total** (belum dikonfirmasi client). Estimasi Rev. 06 (Rp3,0–5,4 jt) ada di `arsip/gravity-fed/estimasi-budget-rev06.html`.
 
 <details>
 <summary>Tabel lama (Rev. 05–06, acuan kasar saja)</summary>
