@@ -1,10 +1,12 @@
 # Bagian 1 — Pipa & Rentang Debit
 
-> Arsitektur: Rev. 07 (satu tangki, pompa langsung). Hitungan ideal tanpa rugi gesek, g = 9,81 m/s², ν air ≈ 1,0 × 10⁻⁶ m²/s.
+> Arsitektur: Rev. 08 (satu tangki, pompa langsung, leher angsa). Hitungan ideal tanpa rugi gesek, g = 9,81 m/s², ν air ≈ 1,0 × 10⁻⁶ m²/s.
 
 ## Ukuran pipa
 
 Tidak berubah dari Rev. 06 — perpindahan ke pompa tidak memengaruhi ukuran pipa.
+
+> ⚠️ Angka ID 19 / 10 / 13 mm **mengasumsikan tabung akrilik tebal 3 mm** (OD 25 / 16 / 19). PVC lokal berbeda (mis. PVC 3/4" AW ber-ID ± 22 mm). Setelah bahan dipilih, ukur ID riil dengan jangka sorong lalu hitung ulang — tinggal ganti angka. Leher venturi paling sensitif: Δh ∝ d⁻⁴ (lihat `02-profil-manometer.md`).
 
 | Bagian | Pipa | Diameter dalam | Luas | Rasio thd pipa besar |
 |---|---|---|---|---|
@@ -27,17 +29,19 @@ v = Q / A (kontinuitas), selisih kolom Δh = (v₂² − v₁²) / 2g (Bernoulli
 ## Batasan
 
 1. **Batas atas 6 L/min** — rentang S2 (YF-S401) hanya sampai 6 L/min. Firmware wajib membatasi PWM pompa. S1 (YF-S201, 1–30 L/min) tidak membatasi.
-2. **Batas bawah ± 3 L/min** —
-   - Di 2 L/min, Re ± 2.200 → zona peralihan laminar–turbulen, perilaku gesekan tidak menentu, data kurang konsisten. Mulai 3 L/min aliran sudah turbulen.
+2. **Batas bawah** —
+   - Di 2 L/min, Re ± 2.200 → hampir laminar, perilaku gesekan tidak menentu.
+   - **Koreksi:** di 3 L/min (Re ± 3.300) aliran **masih zona transisi** — turbulen penuh baru di atas Re ± 4.000 (± 4 L/min). Rugi gesek dan kolom bisa kurang stabil.
    - Di bawah 3 L/min selisih kolom terlalu kecil untuk dibaca dengan penggaris 1 mm.
 3. **Selisih zona C kecil** — rasio penyempitannya hanya 2,14 (venturi 3,61), jadi di 3–4 L/min selisihnya cuma 6–10 mm, rawan tertutup getaran kolom akibat pompa. Jelas terbaca di 5–6 L/min (16–23 mm).
+4. **S1 bekerja di ujung bawah rentangnya** (4–6 L/min dari 1–30 L/min), tempat akurasi turbin murah paling buruk (± 10%). Karena itu S1 wajib dikalibrasi volumetrik (gelas ukur + stopwatch).
 
 ## Kesimpulan
 
-- **Debit kerja: 3–6 L/min.** Titik data yang disarankan: **3, 4, 5, 6 L/min**.
-- **Zona A (venturi) = data Bernoulli utama.** Zona C = pembanding di ketinggian berbeda, paling jelas di 5–6 L/min.
-- Opsi (belum diambil): perkecil zona C ke ID 10 mm supaya selisihnya sejelas venturi — harus dicek dulu terhadap ukuran lubang dalam S2.
+- **Debit untuk demonstrasi & data utama: 4–6 L/min.** Titik data yang disarankan (≥ 5 titik untuk plot Δh vs Q²): **4,0 / 4,5 / 5,0 / 5,5 / 6,0 L/min**. 3 L/min boleh ditambahkan sebagai pelengkap, dengan catatan zona transisi.
+- **Zona A (venturi) = data Bernoulli utama.**
+- **Zona C (Rev. 08): opsional, hanya paket lengkap** — sinyalnya lemah dan S2 berisiko (lihat `02-profil-manometer.md`, bagian paket lengkap). Opsi memperkecil zona C ke ID 10 mm hanya relevan kalau paket lengkap diambil.
 
 ## Berikutnya
 
-Bagian 2 — profil manometer: tinggi tiap kolom termasuk rugi gesek, lalu tinggi tabung yang dibutuhkan (cukup 350 mm atau tidak).
+Bagian 2 — profil manometer: tinggi tiap kolom termasuk rugi gesek, level kolom oleh leher angsa, dan tinggi tabung yang dibutuhkan.

@@ -8,9 +8,9 @@ Freelance job: merancang dan membangun alat praktikum fisika berbasis mikrokontr
 
 Alat ini punya tiga lapis:
 
-1. **Pengukuran inti** — dua sensor flow (debit) di penampang berbeda, dan panel manometer 6 tabung yang membaca tekanan **langsung** (bukan dihitung) di sepanjang test section tiga-zona (venturi mendatar → segmen naik → penyempitan di ketinggian lain).
-2. **Kontrol fisik** — pompa DC di satu tangki mendorong aliran langsung: kenop pompa (PWM) mengatur debit, jadi selisih antar kolom manometer. Katup hilir bermotor servo mengatur level tekanan, jadi semua kolom naik-turun bersama.
-3. **Presentasi** — pewarna air, sonifikasi (nada mengikuti debit), dan mode tantangan target.
+1. **Pengukuran inti** — sensor flow terkalibrasi volumetrik (gelas ukur) dan panel manometer yang membaca tekanan **langsung** (bukan dihitung) di sepanjang test section: venturi mendatar (zona A) → segmen naik (zona B). Paket lengkap menambah penyempitan di ketinggian atas (zona C) + sensor flow kedua.
+2. **Kontrol fisik** — pompa DC di satu tangki mendorong aliran langsung. Kenop mengatur **target debit** yang dikunci kontrol PI, dan selisih antar kolom manometer mengikuti. Level kolom diatur otomatis oleh **leher angsa** di ujung pipa, jadi tidak ada servo.
+3. **Presentasi** — prediksi di balik tombol CEK (muncul setelah siswa mencatat bacaan), sonifikasi (nada mengikuti debit), dan mode tantangan target.
 
 Prinsip yang mendasari semua keputusan desain:
 
@@ -24,9 +24,10 @@ Prinsip yang mendasari semua keputusan desain:
 ├── catatan/
 │   └── konteks-dan-spesifikasi.md     ← acuan kerja aktif — scope, desain, biaya, pertanyaan, log keputusan
 ├── desain/
-│   ├── rancangan-alat.html            ← sketsa tampak depan + alur, Rev. 07 (buka di browser)
+│   ├── rancangan-alat.html            ← sketsa tampak depan + alur, Rev. 08 (buka di browser)
 │   └── perhitungan/
-│       └── 01-pipa-dan-debit.md       ← hitungan dimensi, satu file per bagian
+│       ├── 01-pipa-dan-debit.md       ← hitungan dimensi, satu file per bagian
+│       └── 02-profil-manometer.md
 └── arsip/                             ← materi usang (draft awal, desain gravity-fed Rev. 06)
 ```
 
@@ -48,14 +49,15 @@ Tidak satu pun dari keempat jurnal ini memakai sensor tekanan fisik atau panel m
 - Hardware + firmware saja — pengambilan data, analisis, dan penulisan skripsi dikerjakan client sendiri.
 - Biaya komponen direimburse terpisah dari fee jasa.
 - Deadline longgar (>2 minggu).
-- Rincian lengkap & angka fee: lihat `catatan/konteks-dan-spesifikasi.md` §3 dan §5. Estimasi budget Rev. 06 ada di `arsip/gravity-fed/` (belum dihitung ulang untuk Rev. 07).
+- Rincian lengkap & angka fee: lihat `catatan/konteks-dan-spesifikasi.md` §3 dan §5. Estimasi budget Rev. 06 ada di `arsip/gravity-fed/` (belum dihitung ulang untuk Rev. 08).
 
 ## Status & Blocker
 
-Dua hal ini **wajib selesai sebelum belanja komponen atau mulai fabrikasi**:
+Hal-hal ini **wajib selesai sebelum belanja komponen atau mulai fabrikasi** (daftar lengkap di `catatan/konteks-dan-spesifikasi.md` §6):
 
-1. **Konfirmasi budget ke client.** Desain Rev. 06 (tiga zona + manometer 6 tabung, gravity-fed) diestimasi Rp3,0–5,4 juta, jauh di atas kesepakatan awal Rp1,3–1,75 juta. Target yang sedang dipakai: skenario **Rp2 juta total** (komponen + jasa) — belum dikonfirmasi client. Rev. 07 (pompa langsung) lebih hemat dan tetap interaktif walau tanpa servo, tapi budget-nya belum dihitung ulang.
-2. **Enam pertanyaan ke client** yang masih menggantung (fokus skripsi, data yang dibutuhkan Bab IV, variasi percobaan, toleransi error, batasan ukuran fisik, deadline pasti) — daftar lengkap di `catatan/konteks-dan-spesifikasi.md` §6.
+1. **BAB I–III skripsi client** — menentukan apakah skripsinya R&D alat praktikum atau verifikasi eksperimen, dan karenanya zona/sensor mana yang benar-benar perlu.
+2. **Pilih paket + kesepakatan tertulis satu halaman.** Paket inti (zona A + B) ditargetkan ± **Rp2 juta total** (komponen + jasa, belum dikonfirmasi client dan belum dihitung ulang); paket lengkap menambah zona C + sensor kedua. Kesepakatan memuat kriteria penerimaan terukur, serah terima alat + laporan kalibrasi, dan pernyataan bahwa metodologi & validitas data tanggung jawab client.
+3. **Uji bangku murah** sebelum belanja penuh: stabilitas pompa di PWM rendah, kalibrasi S1 dengan gelas ukur, getaran kolom, ukur ID pipa riil — dan rugi tekanan S2 kalau paket lengkap dipilih.
 
 ## Riwayat desain (ringkas)
 
@@ -66,7 +68,8 @@ Desain berkembang signifikan lewat diskusi, dari alat pasif jadi sistem dengan i
 - **Test section berkembang dari 1 jadi 3 zona**: venturi mendatar (isolasi efek kecepatan) → segmen naik (isolasi efek ketinggian) → penyempitan lagi di ketinggian lain (replikasi Bernoulli, sekaligus mengembalikan makna sensor kedua sebagai pembanding kecepatan).
 - **Panel manometer 6 tabung ditambahkan** setelah client membagikan foto alat peraga Bernoulli komersial — mengubah tekanan dari "dihitung" jadi "terukur langsung", peningkatan kredibilitas data terbesar dalam seluruh proses desain.
 - **Peran pompa diperjelas** jadi tiga mode (Isi/Tahan/Mati), dengan mode Tahan berfungsi sebagai *constant head tank* elektronik — rencana "pompa kedua" yang sempat dipertimbangkan akhirnya tidak diperlukan.
-- **Arsitektur dibalik ke pompa langsung, satu tangki (Rev. 07, final)**: pada gravity-fed, tinggi tangki dan katup saling mengunci dan sulit dijelaskan ke siswa. Pompa berperan sebagai "tangki virtual" yang tingginya bisa diatur, setara secara fisika. Rak, tangki kedua, dan mode Isi/Tahan/Mati hilang; P = ρgh hidrostatis jadi demo terpisah opsional.
+- **Arsitektur dibalik ke pompa langsung, satu tangki (Rev. 07)**: pada gravity-fed, tinggi tangki dan katup saling mengunci dan sulit dijelaskan ke siswa. Pompa berperan sebagai "tangki virtual" yang tingginya bisa diatur, setara secara fisika. Rak, tangki kedua, dan mode Isi/Tahan/Mati hilang.
+- **Evaluasi kelayakan uji → Rev. 08**: zona A terbukti kokoh sebagai bukti utama, zona C lemah dan berisiko. Servo dihapus dan diganti **leher angsa** (level otomatis, tidak menyedot udara); kenop jadi target debit dengan kontrol PI; zona C + sensor kedua jadi opsional (paket lengkap). Ditambah kalibrasi volumetrik, katup searah, uji nol, dan skala tekanan kedua di panel.
 
 Detail teknis lengkap, alasan tiap keputusan, dan estimasi biaya per komponen: lihat `catatan/konteks-dan-spesifikasi.md`.
 
