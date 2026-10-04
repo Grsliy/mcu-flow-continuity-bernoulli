@@ -1,0 +1,11 @@
+# Teks disimpan dengan LF di repo, otomatis disesuaikan di Windows
+* text=auto
+*.md   text
+*.html text
+*.py   text
+
+# File biner, jangan diubah line ending-nya
+*.xlsx binary
+*.pdf  binary
+*.png  binary
+*.jpg  binary
