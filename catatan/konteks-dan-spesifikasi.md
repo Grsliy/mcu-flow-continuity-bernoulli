@@ -1,6 +1,6 @@
 # Spesifikasi & Keputusan
 
-Acuan kerja utama. Sketsa: `desain/rancangan-alat.html` · hitungan: `desain/perhitungan/` · biaya: `anggaran/`.
+Acuan kerja utama. Sketsa: `desain/rancangan-alat.html` · hitungan: `desain/perhitungan/` · biaya: `anggaran/` · firmware: `firmware/` · uji bangku: `uji-bangku.md` · kesepakatan: `draf-kesepakatan.md`.
 
 ## 1. Scope
 
@@ -21,10 +21,14 @@ Acuan kerja utama. Sketsa: `desain/rancangan-alat.html` · hitungan: `desain/per
 | Syarat | — | Rugi tekanan S2 ≤ ± 90 mm di 6 L/min |
 
 **Kontrol**
-- Kenop = target debit, dikunci PI (S1 → PWM pompa).
-- Pengaman: PWM dibatasi; pompa mati bila PWM maksimum tapi debit < 50% target selama > 3 detik.
+- MCU: ESP32-C3 Super Mini (logika 3,3 V → level shifter untuk S1 dan LCD).
+- Pompa: MAXPUMP brushless 12 V 19 W, 800 L/jam, head 5 m; kecepatan diatur lewat tegangan (buck) atau PWM, ditentukan uji bangku.
+- Kenop = target debit, dikunci PI (S1 → keluaran pompa).
+- Pengaman: keluaran dibatasi; masa tenggang 5–10 s saat start; pompa mati bila keluaran maksimum tapi debit < 50% target selama > 3 detik; pull-down di gate → pompa mati saat reset; watchdog.
 - Tombol CEK: prediksi v dan Δh muncul setelah siswa mencatat bacaan.
 - Servo dihapus. Leher angsa menjaga level kolom otomatis dan tekanan semua sadap tetap positif.
+- Air balik masuk tangki di atas muka air, di balik sekat (jauh dari hisapan pompa) supaya gelembung tidak terisap.
+- Elektronik di kotak tahan cipratan, di atas garis air; talang limpah di atas tabung manometer mengalir ke tangki.
 
 **Panel manometer**
 - Skala 0–350 mm, nol = sumbu pipa bawah (datum).
@@ -51,7 +55,7 @@ Daftar komponen: RAB.
 ## 4. Biaya
 
 - RAB: `anggaran/RAB-alat-praktikum-rev08.xlsx`.
-- Perkiraan paket inti ± Rp4,1 juta (komponen ± Rp2,25 jt + kontingensi 10% + ongkir + jasa Rp1,5 jt); paket lengkap ± Rp4,5 juta.
+- Perkiraan paket inti ± Rp4,2–4,3 juta (komponen ± Rp2,4 jt + kontingensi 10% + ongkir + jasa Rp1,5 jt); paket lengkap ± Rp4,6 juta. Angka pasti di sheet Ringkasan (memakai harga online yang sudah diisi).
 - Target client Rp2 juta → kurangi scope atau naikkan budget.
 
 ## 5. Pertanyaan ke client
@@ -82,3 +86,5 @@ Daftar komponen: RAB.
 | 07 | Pompa langsung, satu tangki: tinggi tangki dan katup saling mengunci, sulit dijelaskan ke siswa. |
 | 08 | Setelah evaluasi: servo dihapus → leher angsa; kenop target debit + PI; zona C opsional; tambah katup searah, kalibrasi volumetrik, uji nol, skala kedua. Koreksi: Re 3.300 masih transisi; C_d hanya perkiraan. |
 | 08 | RAB dibuat. |
+| 08 | Evaluasi kedua: bekukan desain kertas, lanjut ke kesepakatan + uji bangku. Perbaikan kecil masuk: air balik di atas muka air + sekat, talang limpah, pull-down, masa tenggang start, ukur periode pulsa. |
+| 08 | Pompa MAXPUMP 12 V 19 W (ZYW890 30 W terlalu kuat). MCU ESP32-C3 Super Mini (murah, USB-C, WiFi untuk log). |
