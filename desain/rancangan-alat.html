@@ -179,6 +179,7 @@
       <li><b>Katup searah</b> di keluaran pompa: pipa tetap penuh saat pompa mati → uji nol.</li>
       <li>S1 dipindah <b>sebelum</b> sadap 1 (dengan ≥ 20 cm pipa lurus). Garis merah z di tabung 4–5.</li>
       <li><b>Zona C + S2 jadi opsional</b> (paket lengkap, syarat lolos uji rugi tekanan S2).</li>
+      <li>Air balik masuk tangki <b>di atas muka air, di balik sekat</b>; <b>talang limpah</b> di atas tabung manometer.</li>
     </ul>
   </div>
 
@@ -233,7 +234,7 @@
         </defs>
 
         <!-- return drain (rear, low) -->
-        <path class="m-return" d="M 1030 522 L 1030 640 L 214 640" marker-end="url(#rtnArrow)"></path>
+        <path class="m-return" d="M 1030 522 L 1030 548 L 214 548" marker-end="url(#rtnArrow)"></path>
 
         <!-- datum -->
         <line class="m-datum" x1="214" y1="600" x2="1080" y2="600"></line>
@@ -260,6 +261,9 @@
         <text class="t-scale" x="292" y="399.1" text-anchor="end">50</text><text class="t-scale" x="654" y="399.1">50</text>
         <text class="t-scale" x="292" y="428" text-anchor="end">0</text><text class="t-scale" x="654" y="428">0</text>
         <text class="t-micro" x="292" y="174" text-anchor="end">mm</text>
+        <!-- overflow gutter above tubes, drains to tank -->
+        <rect class="m-acryl" x="292" y="160" width="320" height="6" rx="2"></rect>
+        <text class="t-micro" x="618" y="166" font-size="9">talang limpah</text>
 
         <!-- tubes 1–5 (Q = 6 L/min, paket inti) -->
         <rect class="m-tube" x="295" y="186" width="10" height="244"></rect>
@@ -363,7 +367,10 @@
         <rect class="m-pvc" x="108" y="608" width="52" height="32" rx="4"></rect>
         <text class="t-micro" x="134" y="628" text-anchor="middle" fill="#dbe7f0">PUMP</text>
         <rect class="m-brass" x="202" y="588" width="10" height="24"></rect>
-        <rect class="m-brass" x="202" y="634" width="10" height="12"></rect>
+        <rect class="m-brass" x="202" y="542" width="10" height="12"></rect>
+        <!-- baffle: return side (right) separated from pump intake (left) -->
+        <line x1="172" y1="474" x2="172" y2="598" stroke="#7f9aab" stroke-width="3"></line>
+        <text class="t-micro" x="189" y="492" text-anchor="middle" font-size="9">sekat</text>
 
         <!-- pressure sensor at tank bottom + drain (optional) -->
         <rect class="m-dark" x="42" y="624" width="18" height="16" rx="2"></rect>
@@ -398,7 +405,7 @@
         </g>
         <rect class="m-optbox" x="708" y="470" width="190" height="70" rx="4"></rect>
         <text class="t-note" x="803" y="462" text-anchor="middle">zona C + S2 · opsional</text>
-        <text class="t-micro" x="803" y="555" text-anchor="middle" font-size="9">paket inti: pipa 19 mm lurus</text>
+        <text class="t-micro" x="803" y="570" text-anchor="middle" font-size="9">paket inti: pipa 19 mm lurus</text>
 
         <!-- flow direction arrows -->
         <line x1="494" y1="600" x2="530" y2="600" stroke="#1f74b8" stroke-width="2" marker-end="url(#flowA)"></line>
@@ -458,7 +465,7 @@
         <rect class="m-shadow" x="56" y="670" width="998" height="6" rx="3"></rect>
         <rect class="m-board" x="36" y="650" width="1034" height="20" rx="3"></rect>
         <line x1="36" y1="656" x2="1070" y2="656" stroke="#d2d7da" stroke-width="1"></line>
-        <text class="t-micro" x="580" y="665" text-anchor="middle">pipa balik ke tangki (jalur belakang, mengalir karena gravitasi)</text>
+        <text class="t-micro" x="580" y="665" text-anchor="middle">pipa balik (jalur belakang): masuk tangki di atas muka air, di balik sekat</text>
         <g>
           <rect class="m-struct" x="126" y="670" width="9" height="24"></rect>
           <ellipse cx="130.5" cy="698" rx="20" ry="7" fill="#3b4148" stroke="#23272c" stroke-width="1"></ellipse>
@@ -536,18 +543,18 @@
   </figure>
 
   <div class="legend-grid">
-    <div class="legend-item"><span class="legend-num">1</span><span>Tangki tunggal + pompa celup DC<span class="sub">Pipa balik diarahkan menjauhi hisapan pompa supaya gelembung tidak tersedot</span></span></div>
+    <div class="legend-item"><span class="legend-num">1</span><span>Tangki tunggal + pompa celup DC<span class="sub">MAXPUMP 12 V 19 W. Air balik masuk di atas muka air, di balik sekat, supaya gelembung tidak terisap pompa</span></span></div>
     <div class="legend-item"><span class="legend-num">2</span><span>Sadap 1 (referensi)<span class="sub">≥ 20 cm pipa lurus setelah S1 (pusaran dari kincir sensor)</span></span></div>
     <div class="legend-item"><span class="legend-num">3</span><span>Sensor flow S1<span class="sub">Debit utama — wajib dikalibrasi dengan gelas ukur</span></span></div>
     <div class="legend-item"><span class="legend-num">4</span><span>Venturi (zona A)<span class="sub">Cetak 3D satu badan dengan nipple; ukur diameter leher setelah jadi</span></span></div>
     <div class="legend-item"><span class="legend-num">5</span><span>Tanjakan (zona B)<span class="sub">Penampang tetap, hanya ketinggian yang berubah (Δz = 120 mm)</span></span></div>
     <div class="legend-item opt"><span class="legend-num">6</span><span>Reducer zona C (opsional)<span class="sub">Paket lengkap saja</span></span></div>
     <div class="legend-item opt"><span class="legend-num">7</span><span>Sensor flow S2 (opsional)<span class="sub">Syarat: rugi tekanan ≤ ± 90 mm di 6 L/min (uji bangku dulu)</span></span></div>
-    <div class="legend-item"><span class="legend-num">8</span><span>Panel manometer 0–350 mm<span class="sub">Garis merah z + skala kedua di tabung 4–5; peta pipa berkode warna; buang udara per selang</span></span></div>
+    <div class="legend-item"><span class="legend-num">8</span><span>Panel manometer 0–350 mm<span class="sub">Garis merah z + skala kedua di tabung 4–5; peta pipa berkode warna; buang udara per selang; talang limpah ke tangki</span></span></div>
     <div class="legend-item"><span class="legend-num">9</span><span>Kran pembuang udara<span class="sub">Untuk pengisian awal; saat mengalir, udara ikut keluar lewat leher angsa</span></span></div>
     <div class="legend-item"><span class="legend-num">10</span><span>Ball valve manual<span class="sub">Penyetelan & perawatan — bukan kenop praktikum (tuas dilepas / di belakang)</span></span></div>
     <div class="legend-item"><span class="legend-num">11</span><span>Leher angsa + corong<span class="sub">Ujung ± 5 cm di atas pipa atas, air jatuh bebas (bukan disambung rapat → bisa sifon). Juga titik kalibrasi gelas ukur</span></span></div>
-    <div class="legend-item"><span class="legend-num">12</span><span>Box kontrol<span class="sub">MCU, layar, kenop target debit (PI), tombol CEK</span></span></div>
+    <div class="legend-item"><span class="legend-num">12</span><span>Box kontrol<span class="sub">ESP32-C3, layar, kenop target debit (PI), tombol CEK — tahan cipratan, di atas garis air</span></span></div>
     <div class="legend-item hydro"><span class="legend-num">13</span><span>Demo hidrostatis tangki (opsional)<span class="sub">Sensor tekanan dasar + HC-SR04 — hanya kalau hidrostatis masuk materi</span></span></div>
     <div class="legend-item"><span class="legend-num">14</span><span>Katup searah (swing/flapper)<span class="sub">Tahan air saat pompa mati → uji nol. Tekanan buka rendah, bukan tipe pegas</span></span></div>
   </div>
