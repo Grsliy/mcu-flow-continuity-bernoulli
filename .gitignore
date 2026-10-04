@@ -1,0 +1,19 @@
+# File kunci sementara Office (muncul saat Excel/Word terbuka)
+~$*
+
+# File sistem
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+
+# Build firmware
+.pio/
+build/
