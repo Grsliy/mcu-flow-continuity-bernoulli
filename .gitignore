@@ -17,3 +17,12 @@ __pycache__/
 # Build firmware
 .pio/
 build/
+
+# File sementara LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
