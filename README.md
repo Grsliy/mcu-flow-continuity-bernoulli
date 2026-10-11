@@ -14,8 +14,8 @@ Alat praktikum berbasis mikrokontroler untuk skripsi client: membuktikan **debit
 ## Folder
 
 ```
-anggaran/   RAB (Excel): harga perkiraan + kolom harga online shop
-catatan/    spesifikasi & keputusan, uji bangku, draf kesepakatan client
+anggaran/   RAB + keuangan (Excel), nota/ untuk foto nota
+catatan/    spesifikasi, uji bangku, kesepakatan, milestone & jadwal harian (PDF)
 desain/     sketsa (HTML) + perhitungan/ (pipa, manometer, pompa)
 firmware/   rencana fungsi & pinout (kode belum dibuat)
 referensi/  4 jurnal acuan

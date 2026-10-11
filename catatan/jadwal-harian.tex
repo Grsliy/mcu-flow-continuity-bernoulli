@@ -1,0 +1,127 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{newunicodechar}
+\usepackage[hidelinks]{hyperref}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{±}{\ensuremath{\pm}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{Δ}{\ensuremath{\Delta}}
+\newunicodechar{²}{\ensuremath{^2}}
+
+\definecolor{navy}{HTML}{1F3A5F}
+\definecolor{gate}{HTML}{2B7D5C}
+\definecolor{warn}{HTML}{B0521F}
+\definecolor{soft}{HTML}{EEF2F7}
+
+\titleformat{\section}{\Large\bfseries\color{navy}}{}{0em}{}
+\setlist{nosep,leftmargin=1.4em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\renewcommand{\arraystretch}{1.3}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{gray}Jadwal Harian Pengerjaan Alat}
+\fancyhead[R]{\small\color{gray}Rev.~08}
+\fancyfoot[C]{\small\thepage}
+
+\newcommand{\cek}{$\square$}
+\newcommand{\done}{$\boxtimes$}
+% Baris tabel: centang | hari | kerjakan | selesai jika
+\newcommand{\hari}[3]{\cek & #1 & #2 & #3 \\ \midrule}
+\newcommand{\haridone}[3]{\done & #1 & #2 & #3 \\ \midrule}
+% Kotak gerbang mingguan
+\newcommand{\gate}[1]{\par\smallskip\noindent\fcolorbox{gate}{gate!6}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
+  \textbf{\color{gate}Titik cek akhir minggu:} #1}}\par}
+
+% Tabel satu minggu
+\newenvironment{minggu}{%
+  \tabularx{\linewidth}{@{}c c L >{\raggedright\arraybackslash}p{4.6cm}@{}}
+  \toprule
+  & \textbf{Hari} & \textbf{Kerjakan} & \textbf{Selesai jika} \\ \midrule}
+  {\endtabularx}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{navy} Jadwal Harian Pengerjaan}\\[0.4em]
+  {\large Alat Praktikum Fluida Dinamis}\\[0.2em]
+  {\small\color{gray} ± 26 hari kerja (5--6 minggu) \;·\; ± 3--4 jam per hari \;·\; Guntur Sulistyo}
+\end{center}
+
+\textbf{Status awal:} DP Rp1.000.000 diterima; YF-S401 dan YF-S201 sudah dibeli (Rp71.400). Keuangan dicatat di sheet \emph{Keuangan} pada \texttt{anggaran/RAB-alat-praktikum-rev08.xlsx}, nota di \texttt{anggaran/nota/}.
+
+\textbf{Asumsi:} paket inti; zona C diputuskan dari uji YF-S401; kiriman marketplace 2--4 hari; BAB I--III dan jadwal sidang client sudah di tangan (kalau belum, minta di Hari~1).
+
+\section*{Minggu 1 — Uji sensor dan belanja tahap 1}
+\begin{minggu}
+\hari{1}{Catat DP dan pembelian sensor di Excel. Pesan barang tahap 1: pompa MAXPUMP, modul buck, ESP32-C3 ×2, level shifter, MOSFET, adaptor 12~V, gelas ukur 2~L, selang bening, sok reduksi, 1~m pipa contoh.}{Semua pesanan terkirim (± Rp700 rb, masih dalam DP)}
+\hari{2}{Pasang PlatformIO. Firmware uji S1: ukur periode pulsa, tampilkan L/min di serial (pakai Arduino yang ada kalau ESP32 belum datang).}{Debit tampil saat sensor dialiri air keran}
+\hari{3}{Kalibrasi awal kedua sensor dengan air keran + ember + gelas ukur di 3 bukaan keran. \textbf{Uji rugi tekanan YF-S401}: selang bening sebelum dan sesudah sensor.}{Faktor-K awal tercatat. \textbf{Keputusan zona C}: rugi ≤ 90~mm → lanjut, lebih → batal}
+\hari{4}{Ukur diameter dalam pipa contoh. Buat CAD venturi parametrik, pesan cetak 3 buah.}{CAD jadi, cetakan dipesan}
+\hari{5}{Cadangan waktu menunggu kiriman. Tulis hasil uji ke \texttt{catatan/hasil-uji/}, commit.}{Hasil uji sensor terdokumentasi}
+\end{minggu}
+\gate{sensor terkalibrasi awal, keputusan zona C diambil, semua barang tahap 1 dalam perjalanan.}
+
+\section*{Minggu 2 — Uji bangku pompa (gerbang M1)}
+\begin{minggu}
+\hari{6}{Rangkai adaptor → sekring → buck → pompa. Sapu tegangan 4--12~V, catat debit dengan gelas ukur.}{\textbf{Tegangan minimum pompa} diketahui}
+\hari{7}{Kendali pompa dari ESP32 (PWM terfilter ke buck, atau PWM MOSFET); keluaran diatur lewat kenop atau serial.}{Debit bisa diatur dari MCU}
+\hari{8}{Uji katup searah (kolom 170~mm, 10 menit), head saat katup tertutup, getaran kolom.}{Lulus uji 3, 4, 9 di \texttt{uji-bangku.md}}
+\hari{9}{Venturi hasil cetak: ukur leher, uji rembes, uji Δh dengan 2 tabung di 4/5/6~L/min.}{Δh mendekati tabel di file 02}
+\hari{10}{Hitung ulang file 01--03 dengan angka riil. Kirim kabar ke client (foto + angka), minta dana komponen sisa.}{Desain final terkunci}
+\end{minggu}
+\gate{4--6~L/min stabil dan katup searah rapat. \textcolor{warn}{Kalau pompa tidak stabil di debit rendah: hambatan di hulu atau bypass (lihat \texttt{03-pompa.md}).}}
+
+\section*{Minggu 3 — Belanja sisa dan mulai fabrikasi}
+\begin{minggu}
+\hari{11}{Finalkan RAB; pesan sisa barang: tangki, tabung manometer satu batch, panel, rangka, fitting.}{Semua pesanan terkirim}
+\hari{12--13}{Sambil menunggu: firmware tahap 2 (kontrol PI, pengaman, state machine) + unit test di laptop.}{\texttt{pio test -e native} lulus}
+\hari{14}{Rangka dan pelat dasar.}{Rangka berdiri kokoh}
+\hari{15}{Tangki: bulkhead, sekat, saringan, keran kuras.}{Tangki diisi tanpa bocor}
+\end{minggu}
+\gate{semua barang sisa dipesan; firmware PI + pengaman lulus unit test; rangka dan tangki siap.}
+
+\section*{Minggu 4 — Fabrikasi lanjutan dan elektronik}
+\begin{minggu}
+\hari{16}{Jalur pipa: S1 → pipa lurus 20~cm → venturi → tanjakan → ball valve → leher angsa.}{Jalur air lengkap}
+\hari{17}{Panel manometer: skala, garis z, tabung, selang, klem, peredam, talang limpah. Sejajarkan angka 0 dengan datum.}{Panel terpasang}
+\hari{18}{Isi air, diamkan 24 jam. Sambil menunggu: firmware tahap 3 (layar, tombol, CEK).}{Tidak bocor; uji nol ± 1~mm}
+\hari{19}{Elektronik di PCB, masuk kotak. Uji reset aman dan derau sensor.}{Pompa tidak menyala saat reset; tidak ada pulsa palsu}
+\hari{20}{Integrasi pertama: kontrol PI jalan di alat jadi.}{Debit mengikuti kenop}
+\end{minggu}
+\gate{alat utuh berjalan; kabar mingguan ke client terkirim.}
+
+\section*{Minggu 5 — Kalibrasi, uji terima, serah terima}
+\begin{minggu}
+\hari{21}{Setel PI; uji pengaman (tutup katup → FAULT).}{Tunak ≤ 10~s, tanpa luapan}
+\hari{22}{Kalibrasi akhir S1 (dan S2): 5 ulangan × 3 debit.}{Faktor-K final di firmware}
+\hari{23}{Uji terima: Δh vs prediksi, plot Δh vs Q².}{Tabel uji terima di \texttt{milestone.pdf} terisi}
+\hari{24}{Cadangan untuk perbaikan dari hasil uji terima.}{Semua kriteria lulus}
+\hari{25}{SOP, manual, laporan kalibrasi, diagram rangkaian.}{Dokumen siap}
+\hari{26}{Demo ke client; client mencoba sendiri; terima pelunasan.}{Berita acara ditandatangani}
+\end{minggu}
+
+\section*{Tiga aturan supaya tidak molor}
+\begin{enumerate}
+  \item \textbf{Hari 3 dan Hari 6 paling menentukan} (rugi YF-S401, tegangan minimum pompa). Kalau gagal, ubah desain saat itu juga.
+  \item \textbf{Kabar ke client setiap akhir minggu}: foto + 2--3 kalimat. Minggu 2 sekaligus meminta dana sisa.
+  \item \textbf{Tertinggal satu hari → pakai hari cadangan} (Hari 5, Hari 24), jangan memotong kalibrasi atau uji bocor.
+\end{enumerate}
+
+\end{document}
