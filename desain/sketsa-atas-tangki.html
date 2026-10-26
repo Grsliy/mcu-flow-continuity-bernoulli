@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tampak Atas Tangki</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1b222c; --paper:#f4f2ec; --line:#d5cec0; --muted:#6e6859; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#e9e6dc; --paper:#13161a; --line:#343941; --muted:#9a9486; } }
+  :root[data-theme="dark"] { --ink:#e9e6dc; --paper:#13161a; --line:#343941; --muted:#9a9486; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans',system-ui,sans-serif; padding:24px 16px 40px; }
+  .wrap { max-width:1000px; margin:0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:.9rem; margin:0 0 14px; }
+  .frame { background:#fff; border:1px solid var(--line); padding:8px; overflow-x:auto; }
+  svg { display:block; width:100%; min-width:640px; height:auto; }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; margin-top:16px; }
+  th { text-align:left; color:var(--muted); font-weight:600; border-bottom:1px solid var(--line); padding:6px 8px; }
+  td { border-bottom:1px solid var(--line); padding:6px 8px; vertical-align:top; }
+  td.n { font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
+  .num { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:50%; background:#2b3138; color:#fff; font-size:.75rem; font-weight:700; }
+  ul { font-size:.88rem; line-height:1.6; }
+</style></head><body><div class="wrap">
+<h1>Tampak Atas — Bagian Dalam Tangki</h1>
+<p class="sub">Ukuran sebenarnya (1 satuan gambar = 1 mm). Langkah 1–7: pompa sampai tank connector. Pipa di dalam tangki PVC 1/2".</p>
+<div class="frame">
+<svg viewBox="-60 -70 560 360" role="img" aria-label="Tampak atas tangki 300 kali 200 milimeter: pompa di kiri, katup searah langsung di outlet pompa, pipa mendatar, siku naik terlihat sebagai lingkaran, pipa ke dinding kanan, tank connector menembus dinding menuju sensor S1; sekat memisahkan sisi pompa dan sisi masuknya air balik.">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#b0521f"/></marker>
+    <marker id="fl" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1f74b8"/></marker>
+  </defs>
+  <style>
+    .t { font-family:'IBM Plex Mono',monospace; font-size:9px; fill:#2b3138; }
+    .s { font-family:'IBM Plex Mono',monospace; font-size:7.5px; fill:#5d666e; }
+    .d { font-family:'IBM Plex Mono',monospace; font-size:8.5px; fill:#b0521f; font-weight:600; }
+    .c { fill:#2b3138; stroke:#fff; stroke-width:1; }
+    .cn { font-family:'IBM Plex Mono',monospace; font-size:8px; fill:#fff; font-weight:700; }
+    .ld { stroke:#2b3138; stroke-width:.6; opacity:.6; }
+  </style>
+
+  <!-- tangki -->
+  <rect x="0" y="0" width="300" height="200" fill="#d6ebf6" stroke="#6f97ad" stroke-width="5"/>
+  <text class="s" x="8" y="14">air (tampak dari atas)</text>
+
+  <!-- sekat (celah di bawah, pipa lewat di bawahnya) -->
+  <line x1="215" y1="3" x2="215" y2="197" stroke="#6f97ad" stroke-width="3" stroke-dasharray="8 4"/>
+  <text class="s" x="219" y="190">sekat</text>
+
+  <!-- pompa -->
+  <rect x="40" y="70" width="90" height="60" rx="5" fill="#1f74b8" stroke="#144f83" stroke-width="1.5"/>
+  <text class="t" x="85" y="98" text-anchor="middle" fill="#fff" style="fill:#fff;font-weight:600">POMPA</text>
+  <text class="s" x="85" y="110" text-anchor="middle" style="fill:#dbe7f0">22 W</text>
+
+  <!-- katup searah 1/2" (tutup segi enam menghadap atas) -->
+  <rect x="130" y="86" width="58" height="28" rx="3" fill="#c9a227" stroke="#8f6f12"/>
+  <polygon points="159,91 166,95 166,105 159,109 152,105 152,95" fill="#b18a1c" stroke="#8f6f12"/>
+  <line x1="138" y1="80" x2="180" y2="80" stroke="#1f74b8" stroke-width="1.5" marker-end="url(#fl)"/>
+
+  <!-- SDL 1/2" -->
+  <rect x="188" y="88" width="14" height="24" fill="#b7bec6" stroke="#6c757d"/>
+  <!-- pipa mendatar bawah 1/2" (lewat di bawah sekat) -->
+  <rect x="202" y="89.5" width="44" height="21" fill="#b7bec6" stroke="#6c757d"/>
+  <!-- siku bawah + pipa naik + siku atas: terlihat sebagai lingkaran dari atas -->
+  <rect x="245" y="88" width="22" height="24" fill="#a3abb4" stroke="#6c757d"/>
+  <circle cx="256" cy="100" r="10.5" fill="#b7bec6" stroke="#6c757d"/>
+  <circle cx="256" cy="100" r="6" fill="none" stroke="#6c757d" stroke-dasharray="2 1.5"/>
+  <!-- pipa mendatar atas ke dinding -->
+  <rect x="267" y="89.5" width="30" height="21" fill="#b7bec6" stroke="#6c757d"/>
+  <!-- tank connector -->
+  <rect x="292" y="84" width="22" height="32" fill="#c9a227" stroke="#8f6f12"/>
+  <!-- keluar ke S1 -->
+  <rect x="314" y="92" width="14" height="16" fill="#b7bec6" stroke="#6c757d"/>
+  <rect x="328" y="85" width="65" height="30" rx="3" fill="#2b3138"/>
+  <text class="t" x="360" y="103" text-anchor="middle" style="fill:#e6eaee;font-weight:600">S1</text>
+  <line x1="398" y1="100" x2="440" y2="100" stroke="#1f74b8" stroke-width="1.5" marker-end="url(#fl)"/>
+  <text class="s" x="402" y="92">ke pipa akrilik</text>
+
+  <!-- air balik masuk (di atas muka air, sisi kanan sekat) -->
+  <rect x="292" y="22" width="22" height="26" fill="#c9a227" stroke="#8f6f12"/>
+  <line x1="420" y1="35" x2="316" y2="35" stroke="#6c757d" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#fl)"/>
+  <text class="s" x="322" y="28">air balik dari corong</text>
+  <text class="s" x="322" y="50">(masuk di atas muka air)</text>
+  <line x1="290" y1="35" x2="262" y2="35" stroke="#1f74b8" stroke-width="1.2" stroke-dasharray="3 2" marker-end="url(#fl)"/>
+
+  <!-- nomor langkah -->
+  <line class="ld" x1="85" y1="60" x2="85" y2="70"/><circle class="c" cx="85" cy="52" r="8"/><text class="cn" x="85" y="55" text-anchor="middle">1</text>
+  <line class="ld" x1="159" y1="136" x2="159" y2="114"/><circle class="c" cx="159" cy="144" r="8"/><text class="cn" x="159" y="147" text-anchor="middle">2</text>
+  <line class="ld" x1="195" y1="70" x2="195" y2="88"/><circle class="c" cx="195" cy="62" r="8"/><text class="cn" x="195" y="65" text-anchor="middle">3</text>
+  <line class="ld" x1="224" y1="132" x2="224" y2="110"/><circle class="c" cx="224" cy="140" r="8"/><text class="cn" x="224" y="143" text-anchor="middle">4</text>
+  <line class="ld" x1="256" y1="70" x2="256" y2="89"/><circle class="c" cx="256" cy="62" r="8"/><text class="cn" x="256" y="65" text-anchor="middle">5</text>
+  <line class="ld" x1="281" y1="132" x2="281" y2="110"/><circle class="c" cx="281" cy="140" r="8"/><text class="cn" x="281" y="143" text-anchor="middle">6</text>
+  <line class="ld" x1="303" y1="132" x2="303" y2="116"/><circle class="c" cx="303" cy="162" r="8"/><text class="cn" x="303" y="165" text-anchor="middle">7</text>
+  <line class="ld" x1="303" y1="154" x2="303" y2="140"/>
+
+  <!-- dimensi -->
+  <line x1="0" y1="225" x2="300" y2="225" stroke="#b0521f" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <text class="d" x="150" y="238" text-anchor="middle">300 mm</text>
+  <line x1="-25" y1="0" x2="-25" y2="200" stroke="#b0521f" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <text class="d" x="-30" y="104" text-anchor="end">200</text>
+  <line x1="130" y1="-25" x2="292" y2="-25" stroke="#b0521f" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <text class="d" x="211" y="-30" text-anchor="middle">± 160 (katup → dinding)</text>
+  <text class="s" x="0" y="-48">BELAKANG ALAT</text>
+  <text class="s" x="0" y="262">DEPAN ALAT (sisi siswa)</text>
+
+  <!-- skala -->
+  <g transform="translate(360,215)">
+    <rect x="0" y="0" width="50" height="5" fill="#2b3138"/><rect x="50" y="0" width="50" height="5" fill="#fff" stroke="#2b3138" stroke-width=".6"/>
+    <text class="s" x="0" y="15" text-anchor="middle">0</text><text class="s" x="50" y="15" text-anchor="middle">50</text><text class="s" x="100" y="15" text-anchor="middle">100 mm</text>
+  </g>
+</svg>
+</div>
+<table>
+<tr><th>No</th><th>Barang</th><th>Ukuran</th><th>Panjang potong</th></tr>
+<tr><td><span class="num">1</span></td><td>Pompa (outlet drat 1/2")</td><td class="n">1/2"</td><td class="n">—</td></tr>
+<tr><td><span class="num">2</span></td><td>Katup searah kuningan swing, disekrup langsung ke pompa, tutup segi enam menghadap atas</td><td class="n">1/2"</td><td class="n">± 60 mm (badan)</td></tr>
+<tr><td><span class="num">3</span></td><td>SDL (sok drat luar)</td><td class="n">1/2"</td><td class="n">—</td></tr>
+<tr><td><span class="num">4</span></td><td>Pipa PVC mendatar, lewat di bawah sekat</td><td class="n">1/2"</td><td class="n">± 60 mm</td></tr>
+<tr><td><span class="num">5</span></td><td>Siku naik → pipa tegak ± 90 mm → siku ke dinding (dari atas terlihat sebagai lingkaran)</td><td class="n">1/2"</td><td class="n">pipa tegak ± 90 mm</td></tr>
+<tr><td><span class="num">6</span></td><td>Pipa PVC mendatar ke dinding (setinggi ± 12 cm dari dasar)</td><td class="n">1/2"</td><td class="n">± 60–100 mm, ukur saat dirakit</td></tr>
+<tr><td><span class="num">7</span></td><td>Tank connector menembus dinding kanan, lalu ke S1 di luar tangki</td><td class="n">1/2"</td><td class="n">—</td></tr>
+</table>
+<ul>
+  <li>Pipa langkah 4 ada di dasar tangki, pipa langkah 6 ada ± 8 cm lebih tinggi; dari atas keduanya tampak segaris.</li>
+  <li>Sekat tidak sampai dasar (ada celah ± 6 cm di bawah) supaya air bisa mengalir ke pompa dan pipa langkah 4 bisa lewat.</li>
+  <li>Air balik masuk dari dinding kanan bagian belakang, di atas muka air, di sisi sekat yang jauh dari pompa.</li>
+</ul>
+</div></body></html>
