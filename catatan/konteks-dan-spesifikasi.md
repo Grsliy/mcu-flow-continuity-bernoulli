@@ -87,4 +87,4 @@ Daftar komponen: RAB.
 | 08 | Setelah evaluasi: servo dihapus → leher angsa; kenop target debit + PI; zona C opsional; tambah katup searah, kalibrasi volumetrik, uji nol, skala kedua. Koreksi: Re 3.300 masih transisi; C_d hanya perkiraan. |
 | 08 | RAB dibuat. |
 | 08 | Evaluasi kedua: bekukan desain kertas, lanjut ke kesepakatan + uji bangku. Perbaikan kecil masuk: air balik di atas muka air + sekat, talang limpah, pull-down, masa tenggang start, ukur periode pulsa. |
-| 08 | Pompa MAXPUMP 12 V 19 W (ZYW890 30 W terlalu kuat). MCU ESP32-C3 Super Mini (murah, USB-C, WiFi untuk log). |
+| 08 | Pompa brushless 12 V ± 20 W, 800 L/jam (ZYW890 30 W terlalu kuat); yang dibeli 22 W. MCU ESP32-C3 Super Mini (murah, USB-C, WiFi untuk log). |
