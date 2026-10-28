@@ -115,7 +115,7 @@ color([0.75, 0.15, 0.12]) translate([X_SDL + 72, Y_PIPA, Z_ATAS + 20]) rotate([0
 // ⑲ leher angsa (PVC 3/4")
 X_LA = X_SDL + 105;
 Z_PUNCAK = Z_ATAS + LEHER;
-X_MULUT = X_LA + 80;
+X_MULUT = X_LA + 100;                                                            // corong Ø90 tidak menabrak pipa naik
 color(C_PVC) jalur([[X_LA, Y_PIPA, Z_ATAS], [X_LA + 30, Y_PIPA, Z_ATAS], [X_LA + 30, Y_PIPA, Z_PUNCAK],
                     [X_MULUT, Y_PIPA, Z_PUNCAK], [X_MULUT, Y_PIPA, Z_PUNCAK - 30]], OD_PVC34);
 
