@@ -20,7 +20,6 @@ desain/     sketsa (HTML), langkah perakitan 1–20 (md), cad/ (model 3D OpenSCA
             perhitungan/ (pipa, manometer, pompa)
 firmware/   rencana fungsi & pinout (kode belum dibuat)
 referensi/  4 jurnal acuan
-arsip/      desain lama, tidak dipakai
 ```
 
 ## Sebelum belanja
