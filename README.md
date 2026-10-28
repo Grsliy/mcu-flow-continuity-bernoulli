@@ -6,7 +6,7 @@ Alat praktikum berbasis mikrokontroler untuk skripsi client: membuktikan **debit
 
 ## Alat (Rev. 08)
 
-- Satu tangki + pompa DC (MAXPUMP 12 V 19 W). Kenop = target debit, dikunci kontrol PI dari sensor flow S1.
+- Satu tangki + pompa DC brushless (12 V 22 W, 800 L/jam). Kenop = target debit, dikunci kontrol PI dari sensor flow S1.
 - MCU: ESP32-C3 Super Mini.
 - Test section: venturi mendatar (zona A) → tanjakan 12 cm (zona B). Zona C + sensor kedua opsional (paket lengkap).
 - Panel manometer membaca tekanan langsung. Level kolom diatur otomatis oleh leher angsa (tanpa servo).
