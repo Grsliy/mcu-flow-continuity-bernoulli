@@ -16,7 +16,7 @@ Alat praktikum berbasis mikrokontroler untuk skripsi client: membuktikan **debit
 ```
 anggaran/   RAB + keuangan (Excel), nota/ untuk foto nota
 catatan/    spesifikasi, uji bangku, kesepakatan, milestone & jadwal harian (PDF)
-desain/     sketsa (HTML), langkah perakitan 1–20 (md), cad/ (model 3D OpenSCAD + pratinjau),
+desain/     sketsa (HTML), langkah perakitan 1–20 (md), cad/ (model 3D OpenSCAD, pratinjau, gambar kerja 2D DXF),
             perhitungan/ (pipa, manometer, pompa)
 firmware/   rencana fungsi & pinout (kode belum dibuat)
 referensi/  4 jurnal acuan
