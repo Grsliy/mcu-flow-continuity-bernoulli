@@ -40,7 +40,7 @@ H = H₀·s² − (H₀/Q₀)·s·Q        s = fraksi kecepatan (1 = penuh)
 
 ## Listrik & sambungan
 
-- 19 W / 12 V ≈ 1,6 A → adaptor 12 V 5 A cukup, sekring 3 A.
+- 22 W / 12 V ≈ 1,8 A → adaptor 12 V 2 A cukup karena pompa jarang jalan penuh; tambah kapasitor 1000 µF di jalur 12 V, sekring 3 A.
 - Outlet 1/2" → katup searah kuningan 1/2" disekrup langsung (lihat `desain/perakitan-01-dalam-tangki.md`).
 - Pompa harus selalu terendam; sambungan kabel di atas muka air.
 
