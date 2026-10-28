@@ -2,7 +2,7 @@
 
 Alat praktikum berbasis mikrokontroler untuk skripsi client: membuktikan **debit, kontinuitas, dan Bernoulli** secara terukur dan interaktif.
 
-**Status:** desain Rev. 08, belum fabrikasi, belum ada firmware.
+**Status:** desain Rev. 08, tahap belanja & perakitan (DP diterima), firmware belum dibuat.
 
 ## Alat (Rev. 08)
 
