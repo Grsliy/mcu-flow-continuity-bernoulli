@@ -22,7 +22,7 @@ Acuan kerja utama. Sketsa: `desain/rancangan-alat.html` · hitungan: `desain/per
 
 **Kontrol**
 - MCU: ESP32-C3 Super Mini (logika 3,3 V → level shifter untuk S1 dan LCD).
-- Pompa: MAXPUMP brushless 12 V 19 W, 800 L/jam, head 5 m; kecepatan diatur lewat tegangan (buck) atau PWM, ditentukan uji bangku.
+- Pompa: brushless 12 V 22 W, 800 L/jam, drat in/out 1/2" (sudah dibeli, Rp97.038); kecepatan diatur lewat tegangan (buck) atau PWM, ditentukan uji bangku.
 - Kenop = target debit, dikunci PI (S1 → keluaran pompa).
 - Pengaman: keluaran dibatasi; masa tenggang 5–10 s saat start; pompa mati bila keluaran maksimum tapi debit < 50% target selama > 3 detik; pull-down di gate → pompa mati saat reset; watchdog.
 - Tombol CEK: prediksi v dan Δh muncul setelah siswa mencatat bacaan.
