@@ -1,6 +1,6 @@
 # 3 — Pompa
 
-Rev. 08, paket inti. Pompa terpilih: **MAXPUMP brushless 12 V, 19 W, 800 L/jam, head maks 5 m, outlet 1/2"**.
+Rev. 08, paket inti. Pompa dibeli: **brushless 12 V, 22 W, 800 L/jam, drat in/out 1/2"**. Hitungan di bawah dibuat untuk kandidat awal (MAXPUMP 19 W, head maks 5 m); pompa 22 W sedikit lebih kuat, jadi bekerja di kecepatan lebih rendah. Tegangan minimum untuk 4–6 L/min dipastikan lewat uji ember.
 
 ## Kebutuhan sistem
 
