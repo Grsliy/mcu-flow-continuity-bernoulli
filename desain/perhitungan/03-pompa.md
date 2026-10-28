@@ -41,7 +41,7 @@ H = H₀·s² − (H₀/Q₀)·s·Q        s = fraksi kecepatan (1 = penuh)
 ## Listrik & sambungan
 
 - 19 W / 12 V ≈ 1,6 A → adaptor 12 V 5 A cukup, sekring 3 A.
-- Outlet 1/2" → sok reduksi 1/2" → 3/4", lalu katup searah.
+- Outlet 1/2" → katup searah kuningan 1/2" disekrup langsung (lihat `desain/perakitan-01-dalam-tangki.md`).
 - Pompa harus selalu terendam; sambungan kabel di atas muka air.
 
 ## Yang harus diukur di uji bangku
